@@ -1,12 +1,8 @@
-name: Automated Release & Rolling Build
+name: Automated Continuous Release Build
 
 on:
   push:
     branches: [ main ]
-    tags:
-      - 'v*'
-  schedule:
-    - cron: '0 2 * * *' # Daily build check at 02:00 UTC
   workflow_dispatch:
 
 permissions:
@@ -29,7 +25,7 @@ jobs:
           python-version: '3.11'
           cache: 'pip'
 
-      - name: Install Packaging Dependencies
+      - name: Install Build Dependencies
         run: |
           python -m pip install --upgrade pip build setuptools wheel
 
@@ -37,32 +33,24 @@ jobs:
         run: |
           python -m build
 
-      - name: Generate Changelog & Release Tag
-        id: tag_name
+      - name: Extract Version
+        id: get_version
         run: |
           VERSION=$(python -c "import owlbearag; print(owlbearag.__version__)")
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "Building automated release for Owlbearag v$VERSION..."
 
-      - name: Publish Automated Rolling Release
+      - name: Create or Update GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: "v${{ steps.tag_name.outputs.version }}"
-          name: "Owlbearag v${{ steps.tag_name.outputs.version }} (Automated Release)"
+          tag_name: "v${{ steps.get_version.outputs.version }}"
+          name: "Owlbearag v${{ steps.get_version.outputs.version }}"
           body: |
-            ## 🦉 Owlbearag v${{ steps.tag_name.outputs.version }} Release
-            
-            This is an automated build release generated from the latest codebase commits on `main`.
+            Continuous automated release built from the latest codebase commits on `main`.
 
-            ### 🚀 Pre-Built Packages Available
-            - Download the `.whl` package below to install instantly:
-              ```bash
-              pip install Owlbearag-${{ steps.tag_name.outputs.version }}-py3-none-any.whl
-              ```
-            - Or install directly from GitHub:
-              ```bash
-              pip install git+https://github.com/areqpl/Owlbearag.git
-              ```
+            ### Installation
+            ```bash
+            pip install git+https://github.com/areqpl/Owlbearag.git
+            ```
           files: |
             dist/*.whl
             dist/*.tar.gz

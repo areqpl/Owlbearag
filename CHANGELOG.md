@@ -1,4 +1,4 @@
-# 📝 Changelog
+# Changelog
 
 All notable changes to the **Owlbearag** project will be documented in this file.
 
@@ -7,26 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [2.1.0] - 2026-08-09
+## [0.1.0] - 2026-08-09
 
-### 🚀 Added
-- **Dynamic Command Auto-Discovery Engine**: Discovers **389+ commands** dynamically across installed agent skills (`~/.agents/skills`), MCP tools, CLI subcommands, and remote GPU/VPS nodes.
-- **Searchable Command Hub Table**: Interactive `QTableWidget` in GUI with instant real-time filtering, double-click auto-fill, and command execution.
-- **PyTorch Deep Learning Neural Reranker**: CUDA-accelerated float16 cosine similarity matrix calculation using `torch.nn.functional.cosine_similarity()`.
-- **Automated Self-Healing Ollama Connection Resolver**: 3-stage health diagnostic probing HTTP endpoints, local fallbacks, and remote systemd service restarts.
-- **GitHub Actions CI/CD & Dependabot Auto-Merge**: Automated build & test workflows for Python 3.10-3.12, tag release builder, and Dependabot auto-merge pipeline.
-
-### ⚡ Security & Performance
-- **SQLite WAL Mode & Busy Timeout**: Enabled `PRAGMA journal_mode=WAL;` and `PRAGMA busy_timeout=5000;` on `rag_knowledge_base.sqlite` to prevent concurrency database locks.
-- **Bounded SSH Timeouts**: Applied `ConnectTimeout=4` and `ServerAliveInterval=3` across all SSH remote workers to guarantee thread-safe anti-deadlock performance.
-- **Encrypted Credential Security**: Config file `~/.gemini/antigravity-cli/config.json` enforced with strict `0600` owner-only permissions.
-
----
-
-## [2.0.0] - 2026-08-09
-
-### 🚀 Initial Enterprise Release
-- Enterprise Python packaging with `pyproject.toml` and `setup.py`.
-- Dual interface deployment: PyQt6 Enterprise Desktop GUI (`owlbearag`) and Rich Terminal CLI (`owlbearag-cli`).
-- Remote dual-GPU telemetry (`nvidia-smi` temperature, core utilization, VRAM metrics).
-- Cloudflare F76 VPS synchronization via `rsync`.
+### Added
+- **PyTorch Reranker**: CUDA float16 cosine similarity matrix calculation using `torch.nn.functional.cosine_similarity()`.
+- **Dual-GPU Monitoring**: `nvidia-smi` telemetry streaming over SSH (`GTX 1080` + `RTX 3060`).
+- **Remote Model Management**: Pull and delete Ollama models on remote accelerator nodes over SSH.
+- **Cloudflare VPS Sync**: Automated background `rsync` workers pulling staging builds from production VPS nodes.
+- **Dynamic Command Discovery**: Auto-discovers 389+ commands across local skills, tools, and remote SSH nodes.
+- **Self-Healing Connection Resolver**: Probes Ollama HTTP endpoints, tests fallbacks, and executes systemd service restarts automatically.
+- **Automated Continuous Releases**: GitHub Actions workflow automatically builds `.whl` and `.tar.gz` and publishes a GitHub Release on every single commit pushed to `main`.
