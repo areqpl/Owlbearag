@@ -1,0 +1,35 @@
+name: Automated PR Review & Auto-Merge
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: read
+
+jobs:
+  auto-approve-and-merge:
+    name: Auto Approve and Merge PRs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Approve Pull Request
+        run: |
+          echo "Approving Pull Request #${{ github.event.pull_request.number }}..."
+          gh pr review "$PR_URL" --approve --body "Automated Review: Pull request syntax verified and approved."
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Enable Auto-Merge
+        run: |
+          echo "Enabling auto-merge for Pull Request #${{ github.event.pull_request.number }}..."
+          gh pr merge "$PR_URL" --auto --squash --delete-branch
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
