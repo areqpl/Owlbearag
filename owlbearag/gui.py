@@ -30,7 +30,7 @@ except ImportError:
 
 from PyQt6.QtCore import Qt, QThread, pyqtSignal, QObject, QUrl
 from PyQt6.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
+    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGridLayout,
     QPushButton, QLabel, QTableWidget, QTableWidgetItem, QHeaderView,
     QProgressBar, QTextEdit, QLineEdit, QComboBox, QTabWidget, QSplitter,
     QGroupBox, QFrame, QMessageBox, QFileDialog, QToolTip, QListWidget, QListWidgetItem
