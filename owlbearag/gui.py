@@ -1247,6 +1247,7 @@ class OwlbearagWindow(QMainWindow):
         self.cmd_filter_input.textChanged.connect(self.filter_dynamic_commands)
 
         self.refresh_cmd_btn = QPushButton("🔄 RESCAN COMMANDS")
+        self.refresh_cmd_btn.setToolTip("Re-scan local filesystem (~/.agents/skills), CLI tools, system utilities, and remote SSH node capabilities to dynamically refresh the 389+ command matrix")
         self.refresh_cmd_btn.clicked.connect(self.load_dynamic_command_table)
 
         cmd_top_bar.addWidget(cmd_title)
@@ -1271,6 +1272,7 @@ class OwlbearagWindow(QMainWindow):
 
         self.run_selected_cmd_btn = QPushButton("🚀 EXECUTE SELECTED COMMAND")
         self.run_selected_cmd_btn.setObjectName("cyanBtn")
+        self.run_selected_cmd_btn.setToolTip("Execute the selected row command from the Dynamic Command Explorer matrix in a dedicated background thread")
         self.run_selected_cmd_btn.clicked.connect(self.execute_selected_explorer_command)
 
         cmd_exec_layout.addWidget(self.selected_cmd_line)
@@ -1289,6 +1291,7 @@ class OwlbearagWindow(QMainWindow):
         remote_header.setStyleSheet("color: #a855f7;")
 
         self.refresh_telemetry_btn = QPushButton("📊 REFRESH GPU METRICS")
+        self.refresh_telemetry_btn.setToolTip("Run nvidia-smi via SSH on remote GPU node (owlyyyrt.local) to query live dual GPU temperatures, VRAM allocation, and core metrics")
         self.refresh_telemetry_btn.clicked.connect(self.refresh_gpu_telemetry)
 
         remote_top.addWidget(remote_header)
@@ -1310,10 +1313,12 @@ class OwlbearagWindow(QMainWindow):
 
         self.pull_model_btn = QPushButton("⬇️ PULL MODEL TO GPU")
         self.pull_model_btn.setObjectName("cyanBtn")
+        self.pull_model_btn.setToolTip("Execute remote SSH command 'ollama pull <model>' on owlyyyrt.local to download and load a model on the GPU node")
         self.pull_model_btn.clicked.connect(self.confirm_and_pull_remote_model)
 
         self.rm_model_btn = QPushButton("🗑️ REMOVE MODEL FROM GPU")
         self.rm_model_btn.setObjectName("dangerBtn")
+        self.rm_model_btn.setToolTip("Execute remote SSH command 'ollama rm <model>' on owlyyyrt.local to remove a model from GPU VRAM after user confirmation")
         self.rm_model_btn.clicked.connect(self.confirm_and_remove_remote_model)
 
         model_mgr_layout.addWidget(self.remote_model_input)
@@ -1336,6 +1341,7 @@ class OwlbearagWindow(QMainWindow):
 
         self.exec_remote_cmd_btn = QPushButton("🚀 EXECUTE ON REMOTE NODE")
         self.exec_remote_cmd_btn.setObjectName("goldBtn")
+        self.exec_remote_cmd_btn.setToolTip("Execute the typed remote shell command on owlyyyrt.local via SSH and display live output")
         self.exec_remote_cmd_btn.clicked.connect(self.confirm_and_exec_remote_command)
 
         remote_cmd_row.addWidget(self.remote_cmd_input)
@@ -1364,6 +1370,7 @@ class OwlbearagWindow(QMainWindow):
         
         self.pt_rerank_btn = QPushButton("🔥 RUN PYTORCH RERANKER")
         self.pt_rerank_btn.setObjectName("dangerBtn")
+        self.pt_rerank_btn.setToolTip("Execute PyTorch CUDA float16 AMP matrix cosine similarity calculations to rank knowledge chunks against query")
         self.pt_rerank_btn.clicked.connect(self.run_pytorch_rerank_demo)
 
         pt_input_row.addWidget(self.pt_query_input)
@@ -2164,13 +2171,6 @@ class OwlbearagWindow(QMainWindow):
 
 
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = OwlbearagWindow()
-    window.show()
-    sys.exit(app.exec())
-
-
-def main():
     app = QApplication(sys.argv)
     window = OwlbearagWindow()
     window.show()
