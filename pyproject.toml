@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
 authors = [
-    {name = "owlyyy", email = "owlyyy@cachyos.local"}
+    {name = "owlyyy", email = "owlbearag-dev@example.com"}
 ]
 keywords = [
     "rag", "pytorch", "reranker", "gpu-telemetry", "nvidia-smi",

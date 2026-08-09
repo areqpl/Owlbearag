@@ -12,7 +12,7 @@
 
 If you discover a security vulnerability within **Owlbearag**, please report it responsibly:
 
-1. **Email**: Send vulnerability details to `owlyyy@cachyos.local`.
+1. **Email**: Send vulnerability details to `security@example.com`.
 2. **Details**: Include steps to reproduce, affected components (e.g. credential encryption in `config.json` or remote SSH timeout handling), and potential impact.
 3. **Response**: We aim to acknowledge reports within 48 hours and provide a fix or mitigation within 7 business days.
 

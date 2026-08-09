@@ -35,9 +35,9 @@ SAVED_CHATS_DIR = HOME / ".gemini/antigravity-cli/saved_chats"
 VPS_SYNC_DIR = HOME / ".gemini/antigravity-cli/vps_f76_sync"
 CONFIG_FILE_PATH = HOME / ".gemini/antigravity-cli/config.json"
 
-DEFAULT_OLLAMA_HOST = "http://owlyyyrt.local:11434"
-DEFAULT_GPU_HOST = "owlyyy@owlyyyrt.local"
-DEFAULT_VPS_HOST = "owlyyy@37.114.37.41"
+DEFAULT_OLLAMA_HOST = os.getenv("OWLBEARAG_OLLAMA_HOST", "http://127.0.0.1:11434")
+DEFAULT_GPU_HOST = os.getenv("OWLBEARAG_GPU_HOST", "user@gpu-node.local")
+DEFAULT_VPS_HOST = os.getenv("OWLBEARAG_VPS_HOST", "user@vps.example.com")
 
 def get_config():
     if CONFIG_FILE_PATH.exists():
@@ -52,8 +52,8 @@ def get_config():
     }
 
 def print_banner():
-    banner_text = "[bold magenta]🦉 OWLBEARAG-CLI — IMPERIAL MULTI-NODE & DUAL-GPU CONSOLE[/bold magenta]\n" \
-                  "[cyan]Nodes: owlpad (Local) | owlyyyrt.local (Dual-GPU Core) | 37.114.37.41 (Cloudflare F76 VPS)[/cyan]"
+    banner_text = "[bold magenta]🦉 OWLBEARAG-CLI — MULTI-NODE RAG & GPU CONSOLE[/bold magenta]\n" \
+                  "[cyan]Nodes: Workstation (Local) | Remote GPU Core | Cloudflare VPS[/cyan]"
     console.print(Panel(banner_text, border_style="magenta", expand=False))
 
 def handle_query(args):
@@ -127,7 +127,7 @@ def handle_vps(args):
 
     if subcmd == "status":
         console.print(f"[bold cyan]🌐 Querying Cloudflare F76 VPS ({vps_host}) Uptime & Disk Usage...[/bold cyan]\n")
-        with console.status("[bold cyan]Connecting via SSH to 37.114.37.41...", spinner="bouncingBar"):
+        with console.status(f"[bold cyan]Connecting via SSH to {vps_host}...", spinner="bouncingBar"):
             cmd = ["ssh", "-o", "ConnectTimeout=5", vps_host, "uptime && df -h /"]
             proc = subprocess.run(cmd, capture_output=True, text=True)
 

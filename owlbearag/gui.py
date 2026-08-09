@@ -51,10 +51,10 @@ SYSTEM_LOGS_DIR = HOME / ".gemini/antigravity-cli/logs"
 CONFIG_FILE_PATH = HOME / ".gemini/antigravity-cli/config.json"
 
 SSH_DIR = HOME / ".ssh"
-DEFAULT_REMOTE_GPU_HOST = "owlyyy@owlyyyrt.local"
-DEFAULT_REMOTE_VPS_HOST = "owlyyy@37.114.37.41"
-DEFAULT_OLLAMA_HOST = "http://owlyyyrt.local:11434"
-FALLBACK_OLLAMA_HOSTS = ["http://owlyyyrt.local:11434", "http://127.0.0.1:11434", "http://37.114.37.41:11434"]
+DEFAULT_REMOTE_GPU_HOST = os.getenv("OWLBEARAG_GPU_HOST", "user@gpu-node.local")
+DEFAULT_REMOTE_VPS_HOST = os.getenv("OWLBEARAG_VPS_HOST", "user@vps.example.com")
+DEFAULT_OLLAMA_HOST = os.getenv("OWLBEARAG_OLLAMA_HOST", "http://127.0.0.1:11434")
+FALLBACK_OLLAMA_HOSTS = ["http://127.0.0.1:11434"]
 
 SAVED_CHATS_DIR.mkdir(parents=True, exist_ok=True)
 VPS_SYNC_DIR.mkdir(parents=True, exist_ok=True)
@@ -117,9 +117,9 @@ class CommandRegistryScanner:
     def discover_all_commands(cls) -> list:
         commands = [
             # Category: Owlbearag CLI Core
-            {"category": "Owlbearag CLI", "command": "vps status", "description": "Query Cloudflare F76 VPS uptime, disk usage, and network status", "type": "cli"},
-            {"category": "Owlbearag CLI", "command": "vps sync", "description": "Sync F76 project data from VPS (37.114.37.41) via rsync", "type": "cli"},
-            {"category": "Owlbearag CLI", "command": "gpu status", "description": "Query remote dual GPU telemetry (nvidia-smi) from owlyyyrt.local", "type": "cli"},
+            {"category": "Owlbearag CLI", "command": "vps status", "description": "Query Cloudflare VPS uptime, disk usage, and network status", "type": "cli"},
+            {"category": "Owlbearag CLI", "command": "vps sync", "description": "Sync project data from VPS node via rsync", "type": "cli"},
+            {"category": "Owlbearag CLI", "command": "gpu status", "description": "Query remote dual GPU telemetry (nvidia-smi) from GPU node", "type": "cli"},
             {"category": "Owlbearag CLI", "command": "gpu pull deepseek-r1-abliterated:latest", "description": "Pull deepseek model onto remote GPU node", "type": "cli"},
             {"category": "Owlbearag CLI", "command": "gpu exec 'free -h'", "description": "Execute remote shell command on GPU node", "type": "cli"},
             {"category": "Owlbearag CLI", "command": "rag PyTorch", "description": "Search SQLite RAG matrix for PyTorch neural embeddings", "type": "cli"},
@@ -128,7 +128,7 @@ class CommandRegistryScanner:
             {"category": "Owlbearag CLI", "command": "hf gguf", "description": "Search HuggingFace Hub for GGUF models", "type": "cli"},
             {"category": "Owlbearag CLI", "command": "hf uncensored", "description": "Search HuggingFace Hub for uncensored story models", "type": "cli"},
             
-            # Category: Remote GPU Node (owlyyyrt.local)
+            # Category: Remote GPU Node
             {"category": "Remote GPU Node", "command": "nvidia-smi", "description": "Query dual-GPU core temperature, VRAM, and process table", "type": "remote_gpu"},
             {"category": "Remote GPU Node", "command": "ollama list", "description": "List all installed LLM models on dual-GPU core", "type": "remote_gpu"},
             {"category": "Remote GPU Node", "command": "ollama ps", "description": "Check currently loaded models in VRAM", "type": "remote_gpu"},
@@ -136,10 +136,10 @@ class CommandRegistryScanner:
             {"category": "Remote GPU Node", "command": "btrfs filesystem show", "description": "Check Btrfs storage pool allocation on GPU node", "type": "remote_gpu"},
             {"category": "Remote GPU Node", "command": "free -h && lscpu", "description": "Audit RAM, ZRAM, and CPU core architecture", "type": "remote_gpu"},
 
-            # Category: Cloudflare VPS Node (37.114.37.41)
-            {"category": "Cloudflare VPS Node", "command": "ssh owlyyy@37.114.37.41 'uptime'", "description": "Query VPS system load and uptime", "type": "remote_vps"},
-            {"category": "Cloudflare VPS Node", "command": "ssh owlyyy@37.114.37.41 'sudo ufw status'", "description": "Inspect Cloudflare UFW firewall active rules", "type": "remote_vps"},
-            {"category": "Cloudflare VPS Node", "command": "ssh owlyyy@37.114.37.41 'ls -la ~/F76WorldChat_Staging'", "description": "List F76 World Chat staging deployment files", "type": "remote_vps"},
+            # Category: Cloudflare VPS Node
+            {"category": "Cloudflare VPS Node", "command": "vps uptime", "description": "Query VPS system load and uptime", "type": "remote_vps"},
+            {"category": "Cloudflare VPS Node", "command": "vps ufw status", "description": "Inspect Cloudflare UFW firewall active rules", "type": "remote_vps"},
+            {"category": "Cloudflare VPS Node", "command": "vps ls -la ~/F76WorldChat_Staging", "description": "List F76 World Chat staging deployment files", "type": "remote_vps"},
 
             # Category: Local System Tools
             {"category": "Local System Tools", "command": "pacseek", "description": "Arch Linux package search & manager", "type": "local"},
@@ -868,19 +868,19 @@ QTabBar::tab {
 }
 
 QTabBar::tab:selected {
-    background-color: #141829;
-    color: #a855f7;
-    border: 1px solid #a855f7;
-    border-bottom: 3px solid #c084fc;
+    background-color: #0c0f1d;
+    color: #00f0ff;
+    border: 1px solid #00f0ff;
+    border-bottom: 3px solid #00f0ff;
 }
 
 QGroupBox {
-    border: 1px solid #1e2238;
+    border: 1px solid #1e2438;
     border-radius: 8px;
     margin-top: 16px;
     padding-top: 18px;
     font-weight: bold;
-    color: #c084fc;
+    color: #00f0ff;
     letter-spacing: 1px;
 }
 
@@ -888,14 +888,13 @@ QGroupBox::title {
     subcontrol-origin: margin;
     left: 16px;
     padding: 0 10px;
-    background-color: #090b10;
+    background-color: #080a10;
 }
 
 QPushButton {
-    background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);
-    background-color: #141829;
-    color: #c084fc;
-    border: 1px solid #7c3aed;
+    background-color: #0c0f1d;
+    color: #00f0ff;
+    border: 1px solid #00f0ff;
     border-radius: 6px;
     padding: 10px 20px;
     font-weight: bold;
@@ -904,40 +903,40 @@ QPushButton {
 }
 
 QPushButton:hover {
-    background-color: #7c3aed;
-    color: #ffffff;
-    border: 1px solid #a855f7;
+    background-color: #00f0ff;
+    color: #080a10;
+    border: 1px solid #38bdf8;
 }
 
 QPushButton:pressed {
-    background-color: #6d28d9;
-    color: #ffffff;
-}
-
-QPushButton#goldBtn {
-    background-color: #1e190b;
-    color: #fbbf24;
-    border: 1px solid #f59e0b;
-}
-
-QPushButton#goldBtn:hover {
-    background-color: #f59e0b;
-    color: #090b10;
-}
-
-QPushButton#cyanBtn {
-    background-color: #061e29;
-    color: #38bdf8;
-    border: 1px solid #0284c7;
-}
-
-QPushButton#cyanBtn:hover {
     background-color: #0284c7;
     color: #ffffff;
 }
 
+QPushButton#goldBtn {
+    background-color: #1a1407;
+    color: #ffb000;
+    border: 1px solid #ffb000;
+}
+
+QPushButton#goldBtn:hover {
+    background-color: #ffb000;
+    color: #080a10;
+}
+
+QPushButton#cyanBtn {
+    background-color: #051620;
+    color: #00f0ff;
+    border: 1px solid #00f0ff;
+}
+
+QPushButton#cyanBtn:hover {
+    background-color: #00f0ff;
+    color: #080a10;
+}
+
 QPushButton#dangerBtn {
-    background-color: #2e090d;
+    background-color: #24080c;
     color: #f43f5e;
     border: 1px solid #e11d48;
 }
@@ -948,26 +947,26 @@ QPushButton#dangerBtn:hover {
 }
 
 QTableWidget {
-    background-color: #05070c;
-    color: #e2e8f0;
-    border: 1px solid #1e2238;
-    gridline-color: #1e2238;
+    background-color: #080a10;
+    color: #f1f5f9;
+    border: 1px solid #1e2438;
+    gridline-color: #1e2438;
     border-radius: 6px;
 }
 
 QHeaderView::section {
-    background-color: #0f121d;
-    color: #c084fc;
+    background-color: #0c0f1d;
+    color: #00f0ff;
     padding: 8px;
     font-weight: bold;
-    border: 1px solid #1e2238;
+    border: 1px solid #1e2438;
 }
 
 QListWidget {
-    background-color: #0d0f18;
-    border: 1px solid #1e2238;
+    background-color: #0c0f1d;
+    border: 1px solid #1e2438;
     border-radius: 6px;
-    color: #c084fc;
+    color: #00f0ff;
     padding: 6px;
 }
 
