@@ -1,6 +1,6 @@
 # 🦉 OWLBEARAG — Enterprise Multi-Node Hybrid RAG & GPU Compute Console
 
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/owlyyy/Owlbearag)
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/areqpl/Owlbearag)
 [![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.1%2B-red.svg)](https://pytorch.org/)
@@ -12,6 +12,7 @@
 
 ## 🌟 Key Enterprise Features
 
+- **⚡ Async Multithreading Workers & Action Confirmation**: All network requests, model inferences, and remote node commands run in dedicated background `QThread` workers. Major mutating actions (model removal, service restart, matrix rebuilding) require explicit user confirmation dialogs before execution.
 - **⚡ Dual-GPU Telemetry & Model Management**: Real-time `nvidia-smi` telemetry (VRAM memory allocation, GPU temperatures, core utilization) and remote Ollama model deployment (`pull` / `rm`) over SSH.
 - **🔥 PyTorch Neural Vector Reranker**: Custom PyTorch CUDA-accelerated float16 cosine similarity matrix calculation for high-precision document chunk reranking.
 - **🌐 Cloudflare F76 VPS Synchronization**: Automated `rsync` background workers for pulling production project configurations and staging deployments from remote Cloudflare VPS servers.
@@ -31,6 +32,7 @@ graph TD
         CLI[owlbearag-cli Rich Terminal]
         RAG[(SQLite FTS5 RAG Matrix - WAL Mode)]
         PYTORCH[PyTorch Neural Vector Reranker]
+        THREADS[Async Multithreading ThreadPool]
     end
 
     subgraph Dual-GPU Accelerator Node [owlyyyrt.local]
@@ -46,17 +48,18 @@ graph TD
         STAGING[F76WorldChat_Staging]
     end
 
-    GUI --> RAG
-    GUI --> PYTORCH
+    GUI --> THREADS
+    THREADS --> RAG
+    THREADS --> PYTORCH
     CLI --> RAG
     
-    GUI -- SSH / HTTP --> OLLAMA_REMOTE
-    GUI -- SSH Telemetry --> GPU_TELEMETRY
+    THREADS -- SSH / HTTP --> OLLAMA_REMOTE
+    THREADS -- SSH Telemetry --> GPU_TELEMETRY
     OLLAMA_REMOTE --> GPU_1
     OLLAMA_REMOTE --> GPU_2
 
-    GUI -- SSH / rsync --> VPS_CONF
-    GUI -- SSH / rsync --> STAGING
+    THREADS -- SSH / rsync --> VPS_CONF
+    THREADS -- SSH / rsync --> STAGING
 ```
 
 ---
@@ -68,7 +71,7 @@ graph TD
 Clone the repository and install in editable mode:
 
 ```bash
-git clone https://github.com/owlyyy/Owlbearag.git
+git clone https://github.com/areqpl/Owlbearag.git
 cd Owlbearag
 pip install -e .
 ```
