@@ -1,45 +1,74 @@
-# Owlbearag
+# 🦉 OWLBEARAG
 
-Owlbearag is a desktop GUI and CLI tool for managing multi-node RAG, PyTorch vector reranking, and remote GPU/VPS infrastructure. It connects a local CachyOS/Linux workstation to remote GPU nodes running Ollama and Cloudflare VPS instances.
+```text
+  ____           _ _                     _     ____    _    ____ 
+ / __ \         | | |                   | |   |  _ \  / \  / ___|
+| |  | |_      _| | |__   ___  __ _ _ __| |__ | |_) |/ _ \| |  _ 
+| |  | \ \ /\ / / | '_ \ / _ \/ _` | '__| '_ \|  _ // ___ \ |_| |
+| |__| |\ V  V /| | |_) |  __/ (_| | |  | | | | | \/ /   \ \____|
+ \____/  \_/\_/ |_|_.__/ \___|\__,_|_|  |_| |_|_| \_\/   \_\____|
+```
 
-## Quick Start
+> **Multi-Node AI Orchestration, PyTorch Vector Reranking & Dual-GPU Compute Management Console.**
 
-### Installation
+---
+
+[![Build Status](https://img.shields.io/github/actions/workflow/status/areqpl/Owlbearag/auto-release.yml?branch=main&style=for-the-badge&logo=github&color=purple)](https://github.com/areqpl/Owlbearag/actions)
+[![Latest Release](https://img.shields.io/github/v/release/areqpl/Owlbearag?color=emerald&style=for-the-badge&logo=github)](https://github.com/areqpl/Owlbearag/releases/latest)
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg?style=for-the-badge&logo=python)](https://www.python.org/)
+[![PyTorch CUDA](https://img.shields.io/badge/PyTorch-CUDA_AMP-orange.svg?style=for-the-badge&logo=pytorch)](https://pytorch.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-violet.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+
+---
+
+## ⚡ What is Owlbearag?
+
+**Owlbearag** bridges your local workstation to remote GPU accelerator nodes and Cloudflare production VPS clusters. Whether you need live dual-GPU telemetry, real-time PyTorch document reranking, or automated VPS staging synchronization, Owlbearag handles it smoothly across both a **PyQt6 Desktop GUI** and a **Rich Terminal CLI**.
+
+---
+
+## 🚀 Quick Start
+
+### 1. Installation
+
+Install directly from GitHub or download pre-built wheel binaries from [Latest Releases](https://github.com/areqpl/Owlbearag/releases/latest):
 
 ```bash
 pip install git+https://github.com/areqpl/Owlbearag.git
 ```
 
-### Usage
+### 2. Launch Interface
 
 ```bash
-# Launch PyQt6 desktop GUI
+# Launch PyQt6 Desktop GUI
 owlbearag
 
-# Run CLI commands
+# Run Rich Terminal CLI
 owlbearag-cli gpu status
-owlbearag-cli rag "PyTorch"
 ```
 
-## Features
+---
 
-- **PyTorch Reranker**: Reranks SQLite FTS5 search results using PyTorch float16 cosine similarity matrix calculations.
-- **Dual-GPU Monitoring**: Runs `nvidia-smi` queries over SSH to stream VRAM allocation and temperature metrics from remote nodes (`owlyyyrt.local`).
-- **Remote Model Management**: Pulls and removes Ollama models on remote accelerator nodes directly from the UI or CLI.
-- **Cloudflare VPS Sync**: Uses `rsync` to pull server configs and staging builds from remote VPS nodes (`37.114.37.41`).
-- **Dynamic Command Discovery**: Auto-discovers commands across local agent skills, CLI subcommands, and remote system utilities.
-- **Self-Healing Connection Resolver**: Probes Ollama HTTP endpoints, tests fallbacks, and executes systemd service restarts if disconnected.
+## 🔥 Key Capabilities
 
-## Documentation
+- **⚡ Dual-GPU Live Telemetry**: Stream `nvidia-smi` memory allocations, core temperatures, and model states over SSH (`GTX 1080` + `RTX 3060`).
+- **🧠 PyTorch Neural Vector Reranker**: Custom CUDA float16 AMP similarity matrix calculations for chunk reranking.
+- **🌐 Cloudflare VPS Synchronization**: Automated background `rsync` workers pulling staging configurations from remote production nodes.
+- **🔍 389+ Dynamic Command Auto-Discovery**: Auto-scans local agent skills, CLI functions, and remote SSH tools in real time.
+- **🔧 Self-Healing Connection Resolver**: Probes Ollama HTTP endpoints, tests fallbacks, and executes systemd service restarts automatically.
 
-Detailed documentation is available in the `docs/` folder:
+---
 
-- [PyTorch Reranker](docs/pytorch-reranker.md)
-- [GPU Telemetry & Model Controls](docs/gpu-telemetry.md)
-- [Cloudflare VPS Sync](docs/vps-sync.md)
-- [Command Discovery Engine](docs/command-discovery.md)
-- [Configuration & Security](docs/configuration-security.md)
+## 📚 Deep Technical Documentation
 
-## License
+- ⚡ [**PyTorch Neural Reranker Architecture**](docs/pytorch-reranker.md)
+- ⚡ [**Dual-GPU Telemetry & Model Management**](docs/gpu-telemetry.md)
+- 🌐 [**Cloudflare VPS Synchronization**](docs/vps-sync.md)
+- 🌐 [**Dynamic Command Auto-Discovery Engine**](docs/command-discovery.md)
+- 🔐 [**Configuration & Security Reference**](docs/configuration-security.md)
 
-MIT License. See [LICENSE](LICENSE) for details.
+---
+
+## 📜 License
+
+Released under the **[MIT License](LICENSE)**.
