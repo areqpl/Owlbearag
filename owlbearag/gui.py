@@ -831,19 +831,19 @@ class RemoteGPUSyncWorker(QObject):
             self.finished.emit(False, str(e))
 
 
-# --- Premium QSS Theme Styling ---
+# --- Mojave Amber Theme Styling (f76.world Cyber-Fallout Palette) ---
 OWLBEARAG_QSS = """
 QMainWindow, QWidget {
-    background-color: #090b10;
-    color: #e2e8f0;
-    font-family: 'Consolas', 'Fira Code', 'Monaco', monospace;
+    background-color: #0a0907;
+    color: #fff8e7;
+    font-family: 'Consolas', 'Fira Code', 'Segoe UI', sans-serif;
     font-size: 13px;
 }
 
 QToolTip {
-    background-color: #141829;
-    color: #c084fc;
-    border: 1px solid #7c3aed;
+    background-color: #18130c;
+    color: #ffb000;
+    border: 1px solid #ffb000;
     border-radius: 4px;
     padding: 6px 10px;
     font-family: 'Consolas', monospace;
@@ -851,36 +851,36 @@ QToolTip {
 }
 
 QTabWidget::pane {
-    border: 1px solid #1e1e38;
-    background-color: #0d0f18;
+    border: 1px solid #362916;
+    background-color: #120f0a;
     border-radius: 8px;
 }
 
 QTabBar::tab {
-    background-color: #0e111d;
-    color: #94a3b8;
-    padding: 11px 24px;
-    border: 1px solid #1e2238;
+    background-color: #120f0a;
+    color: #a38c6b;
+    padding: 10px 22px;
+    border: 1px solid #2e2313;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
     font-weight: bold;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
 }
 
 QTabBar::tab:selected {
-    background-color: #0c0f1d;
-    color: #00f0ff;
-    border: 1px solid #00f0ff;
-    border-bottom: 3px solid #00f0ff;
+    background-color: #1a140c;
+    color: #ffb000;
+    border: 1px solid #ffb000;
+    border-bottom: 3px solid #ffb000;
 }
 
 QGroupBox {
-    border: 1px solid #1e2438;
+    border: 1px solid #362916;
     border-radius: 8px;
     margin-top: 16px;
     padding-top: 18px;
     font-weight: bold;
-    color: #00f0ff;
+    color: #ffb000;
     letter-spacing: 1px;
 }
 
@@ -888,55 +888,55 @@ QGroupBox::title {
     subcontrol-origin: margin;
     left: 16px;
     padding: 0 10px;
-    background-color: #080a10;
+    background-color: #0a0907;
 }
 
 QPushButton {
-    background-color: #0c0f1d;
-    color: #00f0ff;
-    border: 1px solid #00f0ff;
+    background-color: #1a140c;
+    color: #ffb000;
+    border: 1px solid #ffb000;
     border-radius: 6px;
-    padding: 10px 20px;
+    padding: 9px 18px;
     font-weight: bold;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
     text-transform: uppercase;
 }
 
 QPushButton:hover {
-    background-color: #00f0ff;
-    color: #080a10;
-    border: 1px solid #38bdf8;
+    background-color: #ffb000;
+    color: #0a0907;
+    border: 1px solid #fde68a;
 }
 
 QPushButton:pressed {
-    background-color: #0284c7;
+    background-color: #d97706;
     color: #ffffff;
 }
 
 QPushButton#goldBtn {
-    background-color: #1a1407;
-    color: #ffb000;
-    border: 1px solid #ffb000;
+    background-color: #241b08;
+    color: #fbbf24;
+    border: 1px solid #f59e0b;
 }
 
 QPushButton#goldBtn:hover {
-    background-color: #ffb000;
-    color: #080a10;
+    background-color: #fbbf24;
+    color: #0a0907;
 }
 
 QPushButton#cyanBtn {
-    background-color: #051620;
-    color: #00f0ff;
-    border: 1px solid #00f0ff;
+    background-color: #081d24;
+    color: #38bdf8;
+    border: 1px solid #0284c7;
 }
 
 QPushButton#cyanBtn:hover {
-    background-color: #00f0ff;
-    color: #080a10;
+    background-color: #38bdf8;
+    color: #0a0907;
 }
 
 QPushButton#dangerBtn {
-    background-color: #24080c;
+    background-color: #2b0b0e;
     color: #f43f5e;
     border: 1px solid #e11d48;
 }
@@ -947,106 +947,102 @@ QPushButton#dangerBtn:hover {
 }
 
 QTableWidget {
-    background-color: #080a10;
-    color: #f1f5f9;
-    border: 1px solid #1e2438;
-    gridline-color: #1e2438;
+    background-color: #0a0907;
+    color: #fff8e7;
+    border: 1px solid #2e2313;
+    gridline-color: #2e2313;
     border-radius: 6px;
 }
 
 QHeaderView::section {
-    background-color: #0c0f1d;
-    color: #00f0ff;
+    background-color: #16110a;
+    color: #ffb000;
     padding: 8px;
     font-weight: bold;
-    border: 1px solid #1e2438;
+    border: 1px solid #2e2313;
 }
 
 QListWidget {
-    background-color: #0c0f1d;
-    border: 1px solid #1e2438;
+    background-color: #120f0a;
+    border: 1px solid #2e2313;
     border-radius: 6px;
-    color: #00f0ff;
+    color: #ffb000;
     padding: 6px;
 }
 
 QListWidget::item {
     padding: 8px 12px;
-    border-bottom: 1px solid #1e2238;
+    border-bottom: 1px solid #2e2313;
 }
 
 QListWidget::item:hover {
-    background-color: #1e1b4b;
+    background-color: #2e2313;
     color: #ffffff;
 }
 
 QListWidget::item:selected {
-    background-color: #7c3aed;
-    color: #ffffff;
+    background-color: #ffb000;
+    color: #0a0907;
 }
 
 QComboBox {
-    background-color: #0d111e;
-    color: #c084fc;
-    border: 1px solid #7c3aed;
+    background-color: #120f0a;
+    color: #ffb000;
+    border: 1px solid #362916;
     border-radius: 6px;
-    padding: 7px 14px;
-    font-weight: bold;
-    font-family: 'Consolas', 'Monaco', monospace;
+    padding: 6px 12px;
 }
 
 QComboBox QAbstractItemView {
-    background-color: #0d0f18;
-    color: #c084fc;
-    selection-background-color: #7c3aed;
-    selection-color: #ffffff;
+    background-color: #120f0a;
+    color: #ffb000;
+    selection-background-color: #ffb000;
+    selection-color: #0a0907;
 }
 
-QTextEdit, QLineEdit {
-    background-color: #05070c;
-    color: #e2e8f0;
-    border: 1px solid #1e2238;
+QLineEdit, QTextEdit {
+    background-color: #070605;
+    color: #fff8e7;
+    border: 1px solid #362916;
     border-radius: 6px;
-    padding: 10px;
-    font-family: 'Consolas', 'Monaco', monospace;
-    selection-background-color: #7c3aed;
-    selection-color: #ffffff;
+    padding: 8px 12px;
+    selection-background-color: #ffb000;
+    selection-color: #0a0907;
 }
 
 QLineEdit:focus, QTextEdit:focus {
-    border: 1px solid #a855f7;
+    border: 1px solid #ffb000;
 }
 
 QProgressBar {
-    border: 1px solid #1e2238;
+    border: 1px solid #362916;
     border-radius: 6px;
     text-align: center;
-    background-color: #05070c;
-    color: #ffffff;
+    background-color: #0a0907;
+    color: #fff8e7;
     font-weight: bold;
-    font-size: 11px;
 }
 
 QProgressBar::chunk {
-    background-color: #9333ea;
+    background-color: #ffb000;
     border-radius: 5px;
 }
 
 QScrollBar:vertical {
     border: none;
-    background: #090b10;
+    background: #0a0907;
     width: 10px;
     margin: 0px;
 }
 
 QScrollBar::handle:vertical {
-    background: #1e2238;
+    background: #362916;
     min-height: 20px;
     border-radius: 5px;
 }
 
 QScrollBar::handle:vertical:hover {
-    background: #7c3aed;
+    background: #ffb000;
 }
 """
 
@@ -1172,6 +1168,83 @@ class OwlbearagWindow(QMainWindow):
 
         # Main Tabbed Interface
         self.tabs = QTabWidget()
+
+        # --- Tab 0: Welcome Landing Screen ---
+        tab_welcome = QWidget()
+        welcome_layout = QVBoxLayout(tab_welcome)
+
+        welcome_card = QGroupBox("👋 WELCOME TO OWLBEARAG (MOJAVE AMBER EDITION)")
+        welcome_card_layout = QVBoxLayout(welcome_card)
+
+        welcome_hero = QLabel(
+            "<b>OWLBEARAG</b> is an enterprise multi-node AI control suite, PyTorch neural vector similarity reranker, "
+            "and Cloudflare VPS synchronization console.<br/><br/>"
+            "Designed for low-latency local workstation execution, dual-GPU server orchestration (RTX 3060 + GTX 1080), "
+            "and Cloudflare production VPS node management."
+        )
+        welcome_hero.setWordWrap(True)
+        welcome_hero.setStyleSheet("color: #fff8e7; font-size: 14px; padding: 12px; background-color: #16110a; border: 1px solid #362916; border-radius: 6px;")
+        welcome_card_layout.addWidget(welcome_hero)
+
+        grid_box = QGroupBox("⚡ SYSTEM CAPABILITIES & SUBSYSTEMS")
+        grid_layout = QGridLayout(grid_box)
+
+        caps = [
+            ("🧠 Multi-Node RAG Matrix", "SQLite FTS5 database with WAL Mode indexing skills (~/.agents/skills), prompts, chats, and docs."),
+            ("🔥 PyTorch Vector Reranker", "CUDA float16 AMP matrix cosine similarity calculations ranking search chunks against query vectors."),
+            ("⚡ Dual-GPU Telemetry", "Real-time nvidia-smi memory allocation, core temperatures, and remote model pull/remove management."),
+            ("🌐 Cloudflare VPS Sync", "Automated background rsync workers pulling production server configs and staging builds over SSH."),
+            ("🔍 Dynamic Command Hub", "Auto-discovers 389+ commands across installed agent skills, CLI subcommands, and remote SSH tools."),
+            ("🔧 Self-Healing Resolver", "3-stage connection resolver that probes HTTP reachability, tests fallbacks, and restarts systemd services.")
+        ]
+
+        for idx, (title, desc) in enumerate(caps):
+            row = idx // 2
+            col = idx % 2
+            box = QWidget()
+            b_layout = QVBoxLayout(box)
+            lbl_title = QLabel(f"<b>{title}</b>")
+            lbl_title.setStyleSheet("color: #ffb000; font-size: 13px;")
+            lbl_desc = QLabel(desc)
+            lbl_desc.setWordWrap(True)
+            lbl_desc.setStyleSheet("color: #a38c6b; font-size: 11px;")
+            b_layout.addWidget(lbl_title)
+            b_layout.addWidget(lbl_desc)
+            box.setStyleSheet("background-color: #120f0a; border: 1px solid #2e2313; border-radius: 6px; padding: 8px;")
+            grid_layout.addWidget(box, row, col)
+
+        welcome_card_layout.addWidget(grid_box)
+
+        nav_box = QGroupBox("🚀 QUICK NAVIGATION JUMP BAR")
+        nav_layout = QHBoxLayout(nav_box)
+
+        btn_chat = QPushButton("💬 MODEL CHAT")
+        btn_chat.setToolTip("Jump to interactive model chat tab")
+        btn_chat.clicked.connect(lambda: self.tabs.setCurrentIndex(1))
+
+        btn_cmds = QPushButton("🌐 DYNAMIC COMMANDS")
+        btn_cmds.setObjectName("cyanBtn")
+        btn_cmds.setToolTip("Jump to 389+ dynamic command explorer matrix tab")
+        btn_cmds.clicked.connect(lambda: self.tabs.setCurrentIndex(2))
+
+        btn_gpu = QPushButton("🖥️ GPU TELEMETRY")
+        btn_gpu.setObjectName("goldBtn")
+        btn_gpu.setToolTip("Jump to dual GPU telemetry and model manager tab")
+        btn_gpu.clicked.connect(lambda: self.tabs.setCurrentIndex(3))
+
+        btn_pt = QPushButton("🔥 PYTORCH RERANKER")
+        btn_pt.setObjectName("dangerBtn")
+        btn_pt.setToolTip("Jump to PyTorch neural reranker lab tab")
+        btn_pt.clicked.connect(lambda: self.tabs.setCurrentIndex(4))
+
+        nav_layout.addWidget(btn_chat)
+        nav_layout.addWidget(btn_cmds)
+        nav_layout.addWidget(btn_gpu)
+        nav_layout.addWidget(btn_pt)
+
+        welcome_card_layout.addWidget(nav_box)
+        welcome_layout.addWidget(welcome_card)
+        self.tabs.addTab(tab_welcome, "👋 WELCOME")
 
         # --- Tab 1: Interactive Model Chat ---
         tab_chat = QWidget()
