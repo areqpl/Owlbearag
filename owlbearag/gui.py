@@ -1085,65 +1085,30 @@ class OwlbearagWindow(QMainWindow):
         main_widget = QWidget()
         layout = QVBoxLayout(main_widget)
 
-        # Header Panel
-        header = QFrame()
-        header.setFrameShape(QFrame.Shape.StyledPanel)
-        header.setStyleSheet("background: linear-gradient(135deg, #0f121d 0%, #15102a 100%); border: 1px solid #7c3aed; border-radius: 8px; padding: 14px;")
-        header_layout = QHBoxLayout(header)
-        
-        title_box = QVBoxLayout()
-        title_label = QLabel("🦉 OWLBEARAG DYNAMIC COMMAND EXPLORER & HUB")
-        title_label.setFont(QFont("Consolas", 17, QFont.Weight.Bold))
-        title_label.setStyleSheet("color: #c084fc; letter-spacing: 2px;")
-        
-        subtitle = QLabel("Dynamic Auto-Discovered Commands List | Multi-Node GPU & VPS Controls | SQLite WAL")
-        subtitle.setFont(QFont("Consolas", 10))
-        subtitle.setStyleSheet("color: #94a3b8;")
-        title_box.addWidget(title_label)
-        title_box.addWidget(subtitle)
-
-        gauges_layout = QVBoxLayout()
-        self.gpu_status = QLabel(f"⚡ DUAL GPU CORE: ONLINE ({self.cfg.get('remote_gpu_host')})")
-        self.gpu_status.setFont(QFont("Consolas", 10, QFont.Weight.Bold))
-        self.gpu_status.setStyleSheet("color: #c084fc; background-color: #17132e; border: 1px solid #7c3aed; padding: 5px 12px; border-radius: 6px;")
-
-        self.vps_status = QLabel(f"🌐 CLOUDFLARE F76 VPS: ONLINE ({self.cfg.get('remote_vps_host')})")
-        self.vps_status.setFont(QFont("Consolas", 10, QFont.Weight.Bold))
-        self.vps_status.setStyleSheet("color: #38bdf8; background-color: #0b1a29; border: 1px solid #0284c7; padding: 5px 12px; border-radius: 6px;")
-
-        gauges_layout.addWidget(self.gpu_status)
-        gauges_layout.addWidget(self.vps_status)
-
-        header_layout.addLayout(title_box)
-        header_layout.addStretch()
-        header_layout.addLayout(gauges_layout)
-
-        layout.addWidget(header)
-
         # Global Quick Action & RAG Progress Control Bar
         rag_control_card = QFrame()
         rag_control_card.setFrameShape(QFrame.Shape.StyledPanel)
-        rag_control_card.setStyleSheet("background-color: #0b0f19; border: 1px solid #1e2238; border-radius: 8px; padding: 10px;")
+        rag_control_card.setStyleSheet("background-color: #120f0a; border: 1px solid #362916; border-radius: 8px; padding: 10px;")
         rag_card_layout = QVBoxLayout(rag_control_card)
 
         bar_btn_row = QHBoxLayout()
-        self.rebuild_rag_btn = QPushButton("⚡ REBUILD & INDEX SKILLS RAG MATRIX")
-        self.rebuild_rag_btn.setToolTip("Process all skills (~/.agents/skills), prompts, chats, and VPS files with live progress output")
+        self.rebuild_rag_btn = QPushButton("🧠 Index Knowledge")
+        self.rebuild_rag_btn.setToolTip("Process all skills (~/.agents/skills), prompts, chats, and VPS files into the SQLite matrix with live progress")
         self.rebuild_rag_btn.clicked.connect(self.confirm_and_build_index)
 
-        self.quick_vps_btn = QPushButton("🌐 SYNC F76 VPS")
+        self.quick_vps_btn = QPushButton("🌐 Sync VPS")
         self.quick_vps_btn.setObjectName("goldBtn")
-        self.quick_vps_btn.setToolTip(f"Connect to {self.cfg.get('remote_vps_host')} via SSH/rsync and pull F76 project configurations")
-        self.quick_vps_btn.clicked.connect(self.start_vps_sync)
+        self.quick_vps_btn.setToolTip("Connect to remote Cloudflare VPS via SSH/rsync and pull project configurations")
+        self.quick_vps_btn.clicked.connect(self.confirm_and_start_vps_sync)
 
-        self.quick_gpu_btn = QPushButton("🚀 RSYNC TO DUAL GPU")
-        self.quick_gpu_btn.setToolTip(f"Transmit local SQLite RAG matrix to remote GPU node ({self.cfg.get('remote_gpu_host')})")
-        self.quick_gpu_btn.clicked.connect(self.start_remote_gpu_sync)
+        self.quick_gpu_btn = QPushButton("🚀 Sync GPU Node")
+        self.quick_gpu_btn.setToolTip("Transmit local SQLite RAG matrix to remote GPU node")
+        self.quick_gpu_btn.clicked.connect(self.confirm_and_start_gpu_sync)
 
-        self.fix_ollama_btn = QPushButton("🔧 DIAGNOSE & FIX OLLAMA CONNECTION")
+        self.fix_ollama_btn = QPushButton("🔧 Repair Connection")
         self.fix_ollama_btn.setObjectName("cyanBtn")
-        self.fix_ollama_btn.setToolTip("Auto-diagnose Ollama HTTP reachability, systemd service status, and remote host binding")
-        self.fix_ollama_btn.clicked.connect(self.start_ollama_resolver)
+        self.fix_ollama_btn.setToolTip("Auto-diagnose Ollama HTTP reachability, systemd service status, and restart services if disconnected")
+        self.fix_ollama_btn.clicked.connect(self.confirm_and_start_ollama_resolver)
 
         bar_btn_row.addWidget(self.rebuild_rag_btn)
         bar_btn_row.addWidget(self.quick_vps_btn)
@@ -1152,9 +1117,9 @@ class OwlbearagWindow(QMainWindow):
         rag_card_layout.addLayout(bar_btn_row)
 
         progress_row = QHBoxLayout()
-        self.rag_status_label = QLabel("RAG STATUS: MATRIX ONLINE")
+        self.rag_status_label = QLabel("STATUS: MATRIX ONLINE")
         self.rag_status_label.setFont(QFont("Consolas", 10, QFont.Weight.Bold))
-        self.rag_status_label.setStyleSheet("color: #c084fc;")
+        self.rag_status_label.setStyleSheet("color: #ffb000;")
 
         self.progress_bar = QProgressBar()
         self.progress_bar.setValue(100)
@@ -1173,29 +1138,28 @@ class OwlbearagWindow(QMainWindow):
         tab_welcome = QWidget()
         welcome_layout = QVBoxLayout(tab_welcome)
 
-        welcome_card = QGroupBox("👋 WELCOME TO OWLBEARAG (MOJAVE AMBER EDITION)")
+        welcome_card = QGroupBox("👋 Welcome to Owlbearag")
         welcome_card_layout = QVBoxLayout(welcome_card)
 
         welcome_hero = QLabel(
-            "<b>OWLBEARAG</b> is an enterprise multi-node AI control suite, PyTorch neural vector similarity reranker, "
-            "and Cloudflare VPS synchronization console.<br/><br/>"
-            "Designed for low-latency local workstation execution, dual-GPU server orchestration (RTX 3060 + GTX 1080), "
-            "and Cloudflare production VPS node management."
+            "<b>OWLBEARAG</b> is a multi-node RAG, PyTorch vector similarity reranker, "
+            "and GPU compute management console.<br/><br/>"
+            "Connect your local workstation to remote dual-GPU nodes and production VPS servers."
         )
         welcome_hero.setWordWrap(True)
-        welcome_hero.setStyleSheet("color: #fff8e7; font-size: 14px; padding: 12px; background-color: #16110a; border: 1px solid #362916; border-radius: 6px;")
+        welcome_hero.setStyleSheet("color: #fff8e7; font-size: 13px; padding: 10px; background-color: #16110a; border: 1px solid #362916; border-radius: 6px;")
         welcome_card_layout.addWidget(welcome_hero)
 
-        grid_box = QGroupBox("⚡ SYSTEM CAPABILITIES & SUBSYSTEMS")
+        grid_box = QGroupBox("⚡ System Capabilities")
         grid_layout = QGridLayout(grid_box)
 
         caps = [
-            ("🧠 Multi-Node RAG Matrix", "SQLite FTS5 database with WAL Mode indexing skills (~/.agents/skills), prompts, chats, and docs."),
-            ("🔥 PyTorch Vector Reranker", "CUDA float16 AMP matrix cosine similarity calculations ranking search chunks against query vectors."),
-            ("⚡ Dual-GPU Telemetry", "Real-time nvidia-smi memory allocation, core temperatures, and remote model pull/remove management."),
-            ("🌐 Cloudflare VPS Sync", "Automated background rsync workers pulling production server configs and staging builds over SSH."),
-            ("🔍 Dynamic Command Hub", "Auto-discovers 389+ commands across installed agent skills, CLI subcommands, and remote SSH tools."),
-            ("🔧 Self-Healing Resolver", "3-stage connection resolver that probes HTTP reachability, tests fallbacks, and restarts systemd services.")
+            ("🧠 Knowledge RAG Matrix", "SQLite FTS5 database with WAL Mode indexing skills (~/.agents/skills), prompts, chats, and docs."),
+            ("🔥 Vector Reranker Engine", "PyTorch CUDA float16 AMP matrix cosine similarity calculations ranking search chunks."),
+            ("⚡ GPU Node Telemetry", "Real-time nvidia-smi memory allocation, core temperatures, and remote model management."),
+            ("🌐 VPS Synchronization", "Automated background rsync workers pulling production server configs and staging builds."),
+            ("🔍 Command Hub", "Auto-discovers 389+ commands across installed agent skills, CLI subcommands, and SSH tools."),
+            ("🔧 Connection Resolver", "Auto-diagnoses HTTP reachability, tests fallbacks, and executes systemd restarts.")
         ]
 
         for idx, (title, desc) in enumerate(caps):
@@ -1204,35 +1168,35 @@ class OwlbearagWindow(QMainWindow):
             box = QWidget()
             b_layout = QVBoxLayout(box)
             lbl_title = QLabel(f"<b>{title}</b>")
-            lbl_title.setStyleSheet("color: #ffb000; font-size: 13px;")
+            lbl_title.setStyleSheet("color: #ffb000; font-size: 12px;")
             lbl_desc = QLabel(desc)
             lbl_desc.setWordWrap(True)
             lbl_desc.setStyleSheet("color: #a38c6b; font-size: 11px;")
             b_layout.addWidget(lbl_title)
             b_layout.addWidget(lbl_desc)
-            box.setStyleSheet("background-color: #120f0a; border: 1px solid #2e2313; border-radius: 6px; padding: 8px;")
+            box.setStyleSheet("background-color: #120f0a; border: 1px solid #2e2313; border-radius: 6px; padding: 6px;")
             grid_layout.addWidget(box, row, col)
 
         welcome_card_layout.addWidget(grid_box)
 
-        nav_box = QGroupBox("🚀 QUICK NAVIGATION JUMP BAR")
+        nav_box = QGroupBox("🚀 Quick Navigation Bar")
         nav_layout = QHBoxLayout(nav_box)
 
-        btn_chat = QPushButton("💬 MODEL CHAT")
+        btn_chat = QPushButton("💬 Chat")
         btn_chat.setToolTip("Jump to interactive model chat tab")
         btn_chat.clicked.connect(lambda: self.tabs.setCurrentIndex(1))
 
-        btn_cmds = QPushButton("🌐 DYNAMIC COMMANDS")
+        btn_cmds = QPushButton("🌐 Commands")
         btn_cmds.setObjectName("cyanBtn")
-        btn_cmds.setToolTip("Jump to 389+ dynamic command explorer matrix tab")
+        btn_cmds.setToolTip("Jump to dynamic command explorer tab")
         btn_cmds.clicked.connect(lambda: self.tabs.setCurrentIndex(2))
 
-        btn_gpu = QPushButton("🖥️ GPU TELEMETRY")
+        btn_gpu = QPushButton("🖥️ GPU Manager")
         btn_gpu.setObjectName("goldBtn")
         btn_gpu.setToolTip("Jump to dual GPU telemetry and model manager tab")
         btn_gpu.clicked.connect(lambda: self.tabs.setCurrentIndex(3))
 
-        btn_pt = QPushButton("🔥 PYTORCH RERANKER")
+        btn_pt = QPushButton("🔥 Reranker")
         btn_pt.setObjectName("dangerBtn")
         btn_pt.setToolTip("Jump to PyTorch neural reranker lab tab")
         btn_pt.clicked.connect(lambda: self.tabs.setCurrentIndex(4))
@@ -1244,7 +1208,7 @@ class OwlbearagWindow(QMainWindow):
 
         welcome_card_layout.addWidget(nav_box)
         welcome_layout.addWidget(welcome_card)
-        self.tabs.addTab(tab_welcome, "👋 WELCOME")
+        self.tabs.addTab(tab_welcome, "👋 Welcome")
 
         # --- Tab 1: Interactive Model Chat ---
         tab_chat = QWidget()
@@ -1303,24 +1267,24 @@ class OwlbearagWindow(QMainWindow):
         input_row.addWidget(self.send_btn)
         tab_chat_layout.addLayout(input_row)
 
-        self.tabs.addTab(tab_chat, "💬 INTERACTIVE MODEL CHAT")
+        self.tabs.addTab(tab_chat, "💬 Chat")
 
-        # --- Tab 2: Dynamic Command Explorer & Hub (USER REQUESTED) ---
+        # --- Tab 2: Dynamic Command Explorer & Hub ---
         tab_cmd_explorer = QWidget()
         tab_cmd_layout = QVBoxLayout(tab_cmd_explorer)
 
         cmd_top_bar = QHBoxLayout()
-        cmd_title = QLabel("🌐 DYNAMIC DISCOVERED COMMANDS MATRIX & HUB")
+        cmd_title = QLabel("🌐 Command Explorer")
         cmd_title.setFont(QFont("Consolas", 12, QFont.Weight.Bold))
-        cmd_title.setStyleSheet("color: #38bdf8;")
+        cmd_title.setStyleSheet("color: #ffb000;")
 
         self.cmd_filter_input = QLineEdit()
-        self.cmd_filter_input.setPlaceholderText("🔍 FILTER COMMANDS BY KEYWORD OR CATEGORY (e.g. gpu, rag, vps, skill)...")
+        self.cmd_filter_input.setPlaceholderText("🔍 Filter commands by keyword or category...")
         self.cmd_filter_input.textChanged.connect(self.filter_dynamic_commands)
 
-        self.refresh_cmd_btn = QPushButton("🔄 RESCAN COMMANDS")
-        self.refresh_cmd_btn.setToolTip("Re-scan local filesystem (~/.agents/skills), CLI tools, system utilities, and remote SSH node capabilities to dynamically refresh the 389+ command matrix")
-        self.refresh_cmd_btn.clicked.connect(self.load_dynamic_command_table)
+        self.refresh_cmd_btn = QPushButton("🔄 Rescan")
+        self.refresh_cmd_btn.setToolTip("Re-scan local filesystem (~/.agents/skills), CLI tools, system utilities, and remote SSH node capabilities")
+        self.refresh_cmd_btn.clicked.connect(self.confirm_and_rescan_commands)
 
         cmd_top_bar.addWidget(cmd_title)
         cmd_top_bar.addWidget(self.cmd_filter_input)
@@ -1336,34 +1300,34 @@ class OwlbearagWindow(QMainWindow):
         self.cmd_table.itemDoubleClicked.connect(self.on_command_table_double_clicked)
         tab_cmd_layout.addWidget(self.cmd_table)
 
-        cmd_exec_card = QGroupBox("SELECTED COMMAND EXECUTION BAR")
+        cmd_exec_card = QGroupBox("Selected Command Execution")
         cmd_exec_layout = QHBoxLayout(cmd_exec_card)
 
         self.selected_cmd_line = QLineEdit()
-        self.selected_cmd_line.setPlaceholderText("DOUBLE-CLICK ANY COMMAND ABOVE OR TYPE CUSTOM COMMAND HERE...")
+        self.selected_cmd_line.setPlaceholderText("Double-click any command above or type custom command...")
 
-        self.run_selected_cmd_btn = QPushButton("🚀 EXECUTE SELECTED COMMAND")
+        self.run_selected_cmd_btn = QPushButton("🚀 Run Command")
         self.run_selected_cmd_btn.setObjectName("cyanBtn")
-        self.run_selected_cmd_btn.setToolTip("Execute the selected row command from the Dynamic Command Explorer matrix in a dedicated background thread")
+        self.run_selected_cmd_btn.setToolTip("Execute the selected row command from the Explorer matrix in a dedicated background thread")
         self.run_selected_cmd_btn.clicked.connect(self.execute_selected_explorer_command)
 
         cmd_exec_layout.addWidget(self.selected_cmd_line)
         cmd_exec_layout.addWidget(self.run_selected_cmd_btn)
         tab_cmd_layout.addWidget(cmd_exec_card)
 
-        self.tabs.addTab(tab_cmd_explorer, "🌐 DYNAMIC COMMAND HUB")
+        self.tabs.addTab(tab_cmd_explorer, "🌐 Commands")
 
         # --- Tab 3: Remote GPU & Node Interaction Hub ---
         tab_remote = QWidget()
         tab_remote_layout = QVBoxLayout(tab_remote)
 
         remote_top = QHBoxLayout()
-        remote_header = QLabel(f"🖥️ DUAL-GPU REMOTE NODE INTERACTION HUB ({self.cfg.get('remote_gpu_host')})")
+        remote_header = QLabel("🖥️ GPU Node Telemetry")
         remote_header.setFont(QFont("Consolas", 12, QFont.Weight.Bold))
-        remote_header.setStyleSheet("color: #a855f7;")
+        remote_header.setStyleSheet("color: #ffb000;")
 
-        self.refresh_telemetry_btn = QPushButton("📊 REFRESH GPU METRICS")
-        self.refresh_telemetry_btn.setToolTip("Run nvidia-smi via SSH on remote GPU node (owlyyyrt.local) to query live dual GPU temperatures, VRAM allocation, and core metrics")
+        self.refresh_telemetry_btn = QPushButton("📊 Refresh Metrics")
+        self.refresh_telemetry_btn.setToolTip("Run nvidia-smi via SSH to query live dual GPU temperatures, VRAM allocation, and core metrics")
         self.refresh_telemetry_btn.clicked.connect(self.refresh_gpu_telemetry)
 
         remote_top.addWidget(remote_header)
@@ -1374,23 +1338,23 @@ class OwlbearagWindow(QMainWindow):
         self.gpu_telemetry_display = QTextEdit()
         self.gpu_telemetry_display.setReadOnly(True)
         self.gpu_telemetry_display.setMaximumHeight(160)
-        self.gpu_telemetry_display.setStyleSheet("background-color: #05070c; color: #a855f7; font-size: 12px; padding: 10px; border: 1px solid #1e2238;")
+        self.gpu_telemetry_display.setStyleSheet("background-color: #070605; color: #ffb000; font-size: 12px; padding: 10px; border: 1px solid #362916;")
         tab_remote_layout.addWidget(self.gpu_telemetry_display)
 
-        model_mgr_box = QGroupBox("REMOTE OLLAMA MODEL MANAGER (PULL / REMOVE ON DUAL-GPU CORE)")
+        model_mgr_box = QGroupBox("Remote Model Manager")
         model_mgr_layout = QHBoxLayout(model_mgr_box)
 
         self.remote_model_input = QLineEdit()
-        self.remote_model_input.setPlaceholderText("ENTER OLLAMA MODEL NAME TO PULL/REMOVE (e.g. deepseek-r1:7b, mistral, llama3:8b)...")
+        self.remote_model_input.setPlaceholderText("Enter Ollama model name to pull or delete...")
 
-        self.pull_model_btn = QPushButton("⬇️ PULL MODEL TO GPU")
+        self.pull_model_btn = QPushButton("⬇️ Pull Model")
         self.pull_model_btn.setObjectName("cyanBtn")
-        self.pull_model_btn.setToolTip("Execute remote SSH command 'ollama pull <model>' on owlyyyrt.local to download and load a model on the GPU node")
+        self.pull_model_btn.setToolTip("Execute remote SSH command 'ollama pull <model>' to download a model on the GPU node")
         self.pull_model_btn.clicked.connect(self.confirm_and_pull_remote_model)
 
-        self.rm_model_btn = QPushButton("🗑️ REMOVE MODEL FROM GPU")
+        self.rm_model_btn = QPushButton("🗑️ Delete Model")
         self.rm_model_btn.setObjectName("dangerBtn")
-        self.rm_model_btn.setToolTip("Execute remote SSH command 'ollama rm <model>' on owlyyyrt.local to remove a model from GPU VRAM after user confirmation")
+        self.rm_model_btn.setToolTip("Execute remote SSH command 'ollama rm <model>' to remove a model from GPU VRAM after user confirmation")
         self.rm_model_btn.clicked.connect(self.confirm_and_remove_remote_model)
 
         model_mgr_layout.addWidget(self.remote_model_input)
@@ -1398,22 +1362,22 @@ class OwlbearagWindow(QMainWindow):
         model_mgr_layout.addWidget(self.rm_model_btn)
         tab_remote_layout.addWidget(model_mgr_box)
 
-        remote_cmd_box = QGroupBox("REMOTE SSH SHELL DISPATCHER (EXECUTE COMMANDS ON REMOTE NODE)")
+        remote_cmd_box = QGroupBox("Remote SSH Shell")
         remote_cmd_layout = QVBoxLayout(remote_cmd_box)
 
         self.remote_cmd_output = QTextEdit()
         self.remote_cmd_output.setReadOnly(True)
-        self.remote_cmd_output.setStyleSheet("background-color: #05070c; color: #38bdf8; font-size: 13px; padding: 10px; border: 1px solid #1e2238;")
+        self.remote_cmd_output.setStyleSheet("background-color: #070605; color: #38bdf8; font-size: 13px; padding: 10px; border: 1px solid #362916;")
         remote_cmd_layout.addWidget(self.remote_cmd_output)
 
         remote_cmd_row = QHBoxLayout()
         self.remote_cmd_input = QLineEdit()
-        self.remote_cmd_input.setPlaceholderText("TYPE ANY REMOTE COMMAND TO EXECUTE (e.g. btrfs filesystem show, lscpu, docker ps)...")
+        self.remote_cmd_input.setPlaceholderText("Type remote command to execute...")
         self.remote_cmd_input.returnPressed.connect(self.confirm_and_exec_remote_command)
 
-        self.exec_remote_cmd_btn = QPushButton("🚀 EXECUTE ON REMOTE NODE")
+        self.exec_remote_cmd_btn = QPushButton("🚀 Execute Remote")
         self.exec_remote_cmd_btn.setObjectName("goldBtn")
-        self.exec_remote_cmd_btn.setToolTip("Execute the typed remote shell command on owlyyyrt.local via SSH and display live output")
+        self.exec_remote_cmd_btn.setToolTip("Execute typed remote shell command via SSH and display live output")
         self.exec_remote_cmd_btn.clicked.connect(self.confirm_and_exec_remote_command)
 
         remote_cmd_row.addWidget(self.remote_cmd_input)
@@ -1421,29 +1385,29 @@ class OwlbearagWindow(QMainWindow):
         remote_cmd_layout.addLayout(remote_cmd_row)
 
         tab_remote_layout.addWidget(remote_cmd_box)
-        self.tabs.addTab(tab_remote, "🖥️ REMOTE GPU & NODE HUB")
+        self.tabs.addTab(tab_remote, "🖥️ GPU Manager")
 
         # --- Tab 4: PyTorch Neural Reranker Lab ---
         tab_pytorch = QWidget()
         tab_pt_layout = QVBoxLayout(tab_pytorch)
 
-        pt_header = QLabel("🔥 PYTORCH DEEP LEARNING NEURAL VECTOR RERANKER ENGINE")
+        pt_header = QLabel("🔥 PyTorch Vector Reranker")
         pt_header.setFont(QFont("Consolas", 12, QFont.Weight.Bold))
-        pt_header.setStyleSheet("color: #f43f5e;")
+        pt_header.setStyleSheet("color: #ffb000;")
         tab_pt_layout.addWidget(pt_header)
 
         pt_info = QLabel(f"PyTorch Available: {'✅ YES' if HAS_PYTORCH else '❌ NO'} | CUDA Acceleration: {'⚡ ACTIVE (' + torch.cuda.get_device_name(0) + ')' if HAS_PYTORCH and torch.cuda.is_available() else '💻 CPU TENSORS'}")
-        pt_info.setStyleSheet("color: #a855f7; font-weight: bold; background-color: #120917; border: 1px solid #7c3aed; padding: 8px; border-radius: 6px;")
+        pt_info.setStyleSheet("color: #ffb000; font-weight: bold; background-color: #120f0a; border: 1px solid #362916; padding: 8px; border-radius: 6px;")
         tab_pt_layout.addWidget(pt_info)
 
         pt_input_row = QHBoxLayout()
         self.pt_query_input = QLineEdit()
-        self.pt_query_input.setPlaceholderText("ENTER QUERY FOR PYTORCH NEURAL VECTOR RERANKING (e.g. adhd, PyTorch, F76)...")
+        self.pt_query_input.setPlaceholderText("Enter query for PyTorch neural vector reranking...")
         
-        self.pt_rerank_btn = QPushButton("🔥 RUN PYTORCH RERANKER")
+        self.pt_rerank_btn = QPushButton("🔥 Rerank")
         self.pt_rerank_btn.setObjectName("dangerBtn")
-        self.pt_rerank_btn.setToolTip("Execute PyTorch CUDA float16 AMP matrix cosine similarity calculations to rank knowledge chunks against query")
-        self.pt_rerank_btn.clicked.connect(self.run_pytorch_rerank_demo)
+        self.pt_rerank_btn.setToolTip("Execute PyTorch CUDA float16 AMP matrix cosine similarity calculations to rank search results")
+        self.pt_rerank_btn.clicked.connect(self.confirm_and_run_reranker)
 
         pt_input_row.addWidget(self.pt_query_input)
         pt_input_row.addWidget(self.pt_rerank_btn)
@@ -1452,7 +1416,7 @@ class OwlbearagWindow(QMainWindow):
         self.pt_display = QTextEdit()
         self.pt_display.setReadOnly(True)
         self.pt_display.setToolTip("PyTorch Neural Cosine Similarity Reranker Output Matrix")
-        self.pt_display.setStyleSheet("background-color: #05070c; color: #f43f5e; font-size: 13px; padding: 12px; border: 1px solid #1e2238;")
+        self.pt_display.setStyleSheet("background-color: #070605; color: #fff8e7; font-size: 13px; padding: 12px; border: 1px solid #362916;")
         tab_pt_layout.addWidget(self.pt_display)
 
         self.tabs.addTab(tab_pytorch, "🔥 PYTORCH NEURAL RERANKER")
@@ -1945,11 +1909,55 @@ class OwlbearagWindow(QMainWindow):
         self.progress_bar.setFormat(" RAG MATRIX INDEXED (100%) ")
         self.rag_status_label.setText(f"RAG STATUS: READY ({docs} Docs | {chunks} Chunks)")
 
+    # --- Action Confirmation Wrappers ---
+
+    def confirm_and_start_vps_sync(self):
+        vps_host = self.cfg.get("remote_vps_host", DEFAULT_REMOTE_VPS_HOST)
+        if self.confirm_action(
+            "Sync VPS Configuration",
+            f"Connect to remote Cloudflare VPS ({vps_host}) via SSH/rsync and pull project configurations?\n\nThis will synchronize server files into ~/.gemini/antigravity-cli/vps_f76_sync."
+        ):
+            self.start_vps_sync()
+
+    def confirm_and_start_gpu_sync(self):
+        gpu_host = self.cfg.get("remote_gpu_host", DEFAULT_REMOTE_GPU_HOST)
+        if self.confirm_action(
+            "Sync GPU Knowledge Matrix",
+            f"Transmit the local SQLite RAG database to the remote GPU node ({gpu_host}) via SSH/rsync?\n\nThis will update the knowledge matrix on the GPU server."
+        ):
+            self.start_remote_gpu_sync()
+
+    def confirm_and_start_ollama_resolver(self):
+        host = self.cfg.get("ollama_host", DEFAULT_OLLAMA_HOST)
+        if self.confirm_action(
+            "Diagnose & Repair Connection",
+            f"Probe HTTP endpoints for {host}, test fallbacks, and restart remote systemd services if disconnected?\n\nThis will run automated connectivity diagnostics."
+        ):
+            self.start_ollama_resolver()
+
+    def confirm_and_run_reranker(self):
+        query = self.pt_query_input.text().strip()
+        if not query:
+            query = "PyTorch"
+            self.pt_query_input.setText(query)
+        if self.confirm_action(
+            "Run PyTorch Neural Reranker",
+            f"Execute CUDA float16 AMP matrix cosine similarity calculations to rank RAG search results for query '{query}'?\n\nThis will compute similarity scores on the PyTorch tensor engine."
+        ):
+            self.run_pytorch_rerank_demo()
+
+    def confirm_and_rescan_commands(self):
+        if self.confirm_action(
+            "Rescan Command Matrix",
+            "Re-scan local filesystem skills (~/.agents/skills), CLI tools, system utilities, and remote SSH capabilities?\n\nThis will refresh the command table matrix."
+        ):
+            self.load_dynamic_command_table()
+
     # --- Other Node Workers ---
 
     def start_vps_sync(self):
         vps_host = self.cfg.get("remote_vps_host", DEFAULT_REMOTE_VPS_HOST)
-        self.log("INFO", f"[ACTION INITIATED]: User pressed 'SYNC F76 VPS'. Connecting via SSH/rsync to {vps_host}...")
+        self.log("INFO", f"[ACTION INITIATED]: User confirmed 'Sync VPS'. Connecting via SSH/rsync to {vps_host}...")
         self.quick_vps_btn.setEnabled(False)
         self.progress_bar.setValue(0)
         self.progress_bar.setFormat(" FETCHING CLOUDFLARE VPS F76 DATA... ")
