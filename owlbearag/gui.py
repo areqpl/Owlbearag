@@ -1084,16 +1084,20 @@ class OwlbearagWindow(QMainWindow):
     def init_ui(self):
         main_widget = QWidget()
         layout = QVBoxLayout(main_widget)
+        self.setCentralWidget(main_widget)
 
         # Global Quick Action & RAG Progress Control Bar
         rag_control_card = QFrame()
         rag_control_card.setFrameShape(QFrame.Shape.StyledPanel)
-        rag_control_card.setStyleSheet("background-color: #120f0a; border: 1px solid #362916; border-radius: 8px; padding: 10px;")
+        rag_control_card.setStyleSheet("background-color: #120f0a; border: 1px solid #362916; border-radius: 8px; padding: 6px;")
         rag_card_layout = QVBoxLayout(rag_control_card)
 
-        bar_btn_row = QHBoxLayout()
+        bar_btn_grid = QGridLayout()
+        bar_btn_grid.setContentsMargins(0, 0, 0, 0)
+        bar_btn_grid.setSpacing(6)
+
         self.rebuild_rag_btn = QPushButton("🧠 Index Knowledge")
-        self.rebuild_rag_btn.setToolTip("Process all skills (~/.agents/skills), prompts, chats, and VPS files into the SQLite matrix with live progress")
+        self.rebuild_rag_btn.setToolTip("Process all skills (~/.agents/skills), prompts, chats, and VPS files into the SQLite matrix")
         self.rebuild_rag_btn.clicked.connect(self.confirm_and_build_index)
 
         self.quick_vps_btn = QPushButton("🌐 Sync VPS")
@@ -1110,19 +1114,21 @@ class OwlbearagWindow(QMainWindow):
         self.fix_ollama_btn.setToolTip("Auto-diagnose Ollama HTTP reachability, systemd service status, and restart services if disconnected")
         self.fix_ollama_btn.clicked.connect(self.confirm_and_start_ollama_resolver)
 
-        bar_btn_row.addWidget(self.rebuild_rag_btn)
-        bar_btn_row.addWidget(self.quick_vps_btn)
-        bar_btn_row.addWidget(self.quick_gpu_btn)
-        bar_btn_row.addWidget(self.fix_ollama_btn)
-        rag_card_layout.addLayout(bar_btn_row)
+        bar_btn_grid.addWidget(self.rebuild_rag_btn, 0, 0)
+        bar_btn_grid.addWidget(self.quick_vps_btn, 0, 1)
+        bar_btn_grid.addWidget(self.quick_gpu_btn, 0, 2)
+        bar_btn_grid.addWidget(self.fix_ollama_btn, 0, 3)
+        rag_card_layout.addLayout(bar_btn_grid)
 
         progress_row = QHBoxLayout()
+        progress_row.setContentsMargins(0, 4, 0, 0)
         self.rag_status_label = QLabel("STATUS: MATRIX ONLINE")
-        self.rag_status_label.setFont(QFont("Consolas", 10, QFont.Weight.Bold))
+        self.rag_status_label.setFont(QFont("Consolas", 9, QFont.Weight.Bold))
         self.rag_status_label.setStyleSheet("color: #ffb000;")
 
         self.progress_bar = QProgressBar()
         self.progress_bar.setValue(100)
+        self.progress_bar.setFixedHeight(18)
         self.progress_bar.setFormat(" RAG MATRIX: READY ")
 
         progress_row.addWidget(self.rag_status_label)
@@ -1215,26 +1221,26 @@ class OwlbearagWindow(QMainWindow):
         tab_chat_layout = QVBoxLayout(tab_chat)
 
         model_bar = QHBoxLayout()
-        model_label = QLabel("SELECT MODEL:")
-        model_label.setFont(QFont("Consolas", 11, QFont.Weight.Bold))
-        model_label.setStyleSheet("color: #c084fc;")
+        model_label = QLabel("MODEL:")
+        model_label.setFont(QFont("Consolas", 10, QFont.Weight.Bold))
+        model_label.setStyleSheet("color: #ffb000;")
 
         self.model_combo = QComboBox()
-        self.model_combo.setMinimumWidth(340)
-        self.model_combo.setToolTip("Select any installed model (Abliterated, Llama3, NSFW, or custom HuggingFace model)")
+        self.model_combo.setMinimumWidth(280)
+        self.model_combo.setToolTip("Select any installed model on GPU node or local workstation")
         self.model_combo.addItem("deepseek-r1-abliterated:latest")
         self.model_combo.addItem("llama3:8b")
 
-        self.refresh_models_btn = QPushButton("🔄 REFRESH MODELS")
+        self.refresh_models_btn = QPushButton("🔄 Refresh")
         self.refresh_models_btn.setToolTip("Query Ollama API to dynamically refresh available local and remote models")
         self.refresh_models_btn.clicked.connect(self.fetch_available_models)
 
-        self.hf_web_btn = QPushButton("🤗 HUGGINGFACE HUB")
+        self.hf_web_btn = QPushButton("🤗 HuggingFace")
         self.hf_web_btn.setObjectName("goldBtn")
         self.hf_web_btn.setToolTip("Open HuggingFace GGUF models repository in browser")
         self.hf_web_btn.clicked.connect(self.open_huggingface_browser)
 
-        self.save_chat_btn = QPushButton("💾 SAVE CONVERSATION")
+        self.save_chat_btn = QPushButton("💾 Save Chat")
         self.save_chat_btn.setToolTip("Save the current interactive chat history to JSON file and RAG matrix")
         self.save_chat_btn.clicked.connect(self.confirm_and_save_chat)
 
@@ -1247,26 +1253,34 @@ class OwlbearagWindow(QMainWindow):
 
         tab_chat_layout.addLayout(model_bar)
 
+        # Resizable Splitter for Chat Display vs Prompt Input
+        chat_splitter = QSplitter(Qt.Orientation.Vertical)
+
         self.chat_display = QTextEdit()
         self.chat_display.setReadOnly(True)
         self.chat_display.setToolTip("Live Streaming Chat Response View")
-        self.chat_display.setStyleSheet("background-color: #05070c; color: #c084fc; font-size: 14px; padding: 14px; border: 1px solid #1e2238;")
-        tab_chat_layout.addWidget(self.chat_display)
+        self.chat_display.setStyleSheet("background-color: #070605; color: #fff8e7; font-size: 13px; padding: 10px; border: 1px solid #362916;")
+        chat_splitter.addWidget(self.chat_display)
 
-        input_row = QHBoxLayout()
+        input_container = QWidget()
+        input_row = QHBoxLayout(input_container)
+        input_row.setContentsMargins(0, 0, 0, 0)
         self.chat_input = QLineEdit()
-        self.chat_input.setPlaceholderText("TYPE WHATEVER YOU WANT TO THE CHOSEN MODEL (PROMPT, STORY, CODE)...")
-        self.chat_input.setToolTip("Type message prompt or instruction and press ENTER or click TRANSMIT MESSAGE")
+        self.chat_input.setPlaceholderText("Type prompt or instruction and press ENTER...")
+        self.chat_input.setToolTip("Type message prompt and press ENTER or click Send")
         self.chat_input.returnPressed.connect(self.send_chat_message)
 
-        self.send_btn = QPushButton("🚀 TRANSMIT MESSAGE")
+        self.send_btn = QPushButton("🚀 Send")
         self.send_btn.setToolTip("Send prompt message to selected model and stream live output")
         self.send_btn.clicked.connect(self.send_chat_message)
 
         input_row.addWidget(self.chat_input)
         input_row.addWidget(self.send_btn)
-        tab_chat_layout.addLayout(input_row)
+        chat_splitter.addWidget(input_container)
+        chat_splitter.setStretchFactor(0, 4)
+        chat_splitter.setStretchFactor(1, 1)
 
+        tab_chat_layout.addWidget(chat_splitter)
         self.tabs.addTab(tab_chat, "💬 Chat")
 
         # --- Tab 2: Dynamic Command Explorer & Hub ---
@@ -1275,7 +1289,7 @@ class OwlbearagWindow(QMainWindow):
 
         cmd_top_bar = QHBoxLayout()
         cmd_title = QLabel("🌐 Command Explorer")
-        cmd_title.setFont(QFont("Consolas", 12, QFont.Weight.Bold))
+        cmd_title.setFont(QFont("Consolas", 11, QFont.Weight.Bold))
         cmd_title.setStyleSheet("color: #ffb000;")
 
         self.cmd_filter_input = QLineEdit()
@@ -1283,13 +1297,15 @@ class OwlbearagWindow(QMainWindow):
         self.cmd_filter_input.textChanged.connect(self.filter_dynamic_commands)
 
         self.refresh_cmd_btn = QPushButton("🔄 Rescan")
-        self.refresh_cmd_btn.setToolTip("Re-scan local filesystem (~/.agents/skills), CLI tools, system utilities, and remote SSH node capabilities")
+        self.refresh_cmd_btn.setToolTip("Re-scan local filesystem skills (~/.agents/skills), CLI tools, system utilities, and remote SSH node capabilities")
         self.refresh_cmd_btn.clicked.connect(self.confirm_and_rescan_commands)
 
         cmd_top_bar.addWidget(cmd_title)
         cmd_top_bar.addWidget(self.cmd_filter_input)
         cmd_top_bar.addWidget(self.refresh_cmd_btn)
         tab_cmd_layout.addLayout(cmd_top_bar)
+
+        cmd_splitter = QSplitter(Qt.Orientation.Vertical)
 
         self.cmd_table = QTableWidget()
         self.cmd_table.setColumnCount(3)
@@ -1298,7 +1314,7 @@ class OwlbearagWindow(QMainWindow):
         self.cmd_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents)
         self.cmd_table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeMode.Stretch)
         self.cmd_table.itemDoubleClicked.connect(self.on_command_table_double_clicked)
-        tab_cmd_layout.addWidget(self.cmd_table)
+        cmd_splitter.addWidget(self.cmd_table)
 
         cmd_exec_card = QGroupBox("Selected Command Execution")
         cmd_exec_layout = QHBoxLayout(cmd_exec_card)
@@ -1313,8 +1329,12 @@ class OwlbearagWindow(QMainWindow):
 
         cmd_exec_layout.addWidget(self.selected_cmd_line)
         cmd_exec_layout.addWidget(self.run_selected_cmd_btn)
-        tab_cmd_layout.addWidget(cmd_exec_card)
+        cmd_splitter.addWidget(cmd_exec_card)
 
+        cmd_splitter.setStretchFactor(0, 4)
+        cmd_splitter.setStretchFactor(1, 1)
+
+        tab_cmd_layout.addWidget(cmd_splitter)
         self.tabs.addTab(tab_cmd_explorer, "🌐 Commands")
 
         # --- Tab 3: Remote GPU & Node Interaction Hub ---
@@ -1322,8 +1342,8 @@ class OwlbearagWindow(QMainWindow):
         tab_remote_layout = QVBoxLayout(tab_remote)
 
         remote_top = QHBoxLayout()
-        remote_header = QLabel("🖥️ GPU Node Telemetry")
-        remote_header.setFont(QFont("Consolas", 12, QFont.Weight.Bold))
+        remote_header = QLabel("🖥️ GPU Manager")
+        remote_header.setFont(QFont("Consolas", 11, QFont.Weight.Bold))
         remote_header.setStyleSheet("color: #ffb000;")
 
         self.refresh_telemetry_btn = QPushButton("📊 Refresh Metrics")
@@ -1335,17 +1355,26 @@ class OwlbearagWindow(QMainWindow):
         remote_top.addWidget(self.refresh_telemetry_btn)
         tab_remote_layout.addLayout(remote_top)
 
+        gpu_splitter = QSplitter(Qt.Orientation.Vertical)
+
         self.gpu_telemetry_display = QTextEdit()
         self.gpu_telemetry_display.setReadOnly(True)
-        self.gpu_telemetry_display.setMaximumHeight(160)
         self.gpu_telemetry_display.setStyleSheet("background-color: #070605; color: #ffb000; font-size: 12px; padding: 10px; border: 1px solid #362916;")
-        tab_remote_layout.addWidget(self.gpu_telemetry_display)
+        gpu_splitter.addWidget(self.gpu_telemetry_display)
 
-        model_mgr_box = QGroupBox("Remote Model Manager")
+        model_mgr_box = QGroupBox("Available Remote Models Manager")
         model_mgr_layout = QHBoxLayout(model_mgr_box)
 
+        lbl_remote_m = QLabel("MODEL:")
+        lbl_remote_m.setStyleSheet("color: #ffb000; font-weight: bold;")
+
+        self.remote_model_combo = QComboBox()
+        self.remote_model_combo.setMinimumWidth(260)
+        self.remote_model_combo.addItem("deepseek-r1-abliterated:latest")
+        self.remote_model_combo.addItem("llama3:8b")
+
         self.remote_model_input = QLineEdit()
-        self.remote_model_input.setPlaceholderText("Enter Ollama model name to pull or delete...")
+        self.remote_model_input.setPlaceholderText("Or type model name to pull...")
 
         self.pull_model_btn = QPushButton("⬇️ Pull Model")
         self.pull_model_btn.setObjectName("cyanBtn")
@@ -1357,10 +1386,12 @@ class OwlbearagWindow(QMainWindow):
         self.rm_model_btn.setToolTip("Execute remote SSH command 'ollama rm <model>' to remove a model from GPU VRAM after user confirmation")
         self.rm_model_btn.clicked.connect(self.confirm_and_remove_remote_model)
 
+        model_mgr_layout.addWidget(lbl_remote_m)
+        model_mgr_layout.addWidget(self.remote_model_combo)
         model_mgr_layout.addWidget(self.remote_model_input)
         model_mgr_layout.addWidget(self.pull_model_btn)
         model_mgr_layout.addWidget(self.rm_model_btn)
-        tab_remote_layout.addWidget(model_mgr_box)
+        gpu_splitter.addWidget(model_mgr_box)
 
         remote_cmd_box = QGroupBox("Remote SSH Shell")
         remote_cmd_layout = QVBoxLayout(remote_cmd_box)
@@ -1384,23 +1415,36 @@ class OwlbearagWindow(QMainWindow):
         remote_cmd_row.addWidget(self.exec_remote_cmd_btn)
         remote_cmd_layout.addLayout(remote_cmd_row)
 
-        tab_remote_layout.addWidget(remote_cmd_box)
+        gpu_splitter.addWidget(remote_cmd_box)
+
+        gpu_splitter.setStretchFactor(0, 2)
+        gpu_splitter.setStretchFactor(1, 1)
+        gpu_splitter.setStretchFactor(2, 3)
+
+        tab_remote_layout.addWidget(gpu_splitter)
         self.tabs.addTab(tab_remote, "🖥️ GPU Manager")
 
         # --- Tab 4: PyTorch Neural Reranker Lab ---
         tab_pytorch = QWidget()
         tab_pt_layout = QVBoxLayout(tab_pytorch)
 
-        pt_header = QLabel("🔥 PyTorch Vector Reranker")
-        pt_header.setFont(QFont("Consolas", 12, QFont.Weight.Bold))
+        pt_header = QLabel("🔥 PyTorch Vector Reranker Engine")
+        pt_header.setFont(QFont("Consolas", 11, QFont.Weight.Bold))
         pt_header.setStyleSheet("color: #ffb000;")
         tab_pt_layout.addWidget(pt_header)
 
-        pt_info = QLabel(f"PyTorch Available: {'✅ YES' if HAS_PYTORCH else '❌ NO'} | CUDA Acceleration: {'⚡ ACTIVE (' + torch.cuda.get_device_name(0) + ')' if HAS_PYTORCH and torch.cuda.is_available() else '💻 CPU TENSORS'}")
+        pt_info = QLabel(
+            "Local Workstation: PyTorch 2.13.0 (CPU Tensors) | "
+            f"Remote GPU Core ({self.cfg.get('remote_gpu_host')}): NVIDIA RTX 3060 12GB + GTX 1080 8GB (CUDA Active)"
+        )
         pt_info.setStyleSheet("color: #ffb000; font-weight: bold; background-color: #120f0a; border: 1px solid #362916; padding: 8px; border-radius: 6px;")
         tab_pt_layout.addWidget(pt_info)
 
-        pt_input_row = QHBoxLayout()
+        pt_splitter = QSplitter(Qt.Orientation.Vertical)
+
+        pt_input_container = QWidget()
+        pt_input_row = QHBoxLayout(pt_input_container)
+        pt_input_row.setContentsMargins(0, 0, 0, 0)
         self.pt_query_input = QLineEdit()
         self.pt_query_input.setPlaceholderText("Enter query for PyTorch neural vector reranking...")
         
@@ -1411,15 +1455,19 @@ class OwlbearagWindow(QMainWindow):
 
         pt_input_row.addWidget(self.pt_query_input)
         pt_input_row.addWidget(self.pt_rerank_btn)
-        tab_pt_layout.addLayout(pt_input_row)
+        pt_splitter.addWidget(pt_input_container)
 
         self.pt_display = QTextEdit()
         self.pt_display.setReadOnly(True)
         self.pt_display.setToolTip("PyTorch Neural Cosine Similarity Reranker Output Matrix")
         self.pt_display.setStyleSheet("background-color: #070605; color: #fff8e7; font-size: 13px; padding: 12px; border: 1px solid #362916;")
-        tab_pt_layout.addWidget(self.pt_display)
+        pt_splitter.addWidget(self.pt_display)
 
-        self.tabs.addTab(tab_pytorch, "🔥 PYTORCH NEURAL RERANKER")
+        pt_splitter.setStretchFactor(0, 1)
+        pt_splitter.setStretchFactor(1, 4)
+
+        tab_pt_layout.addWidget(pt_splitter)
+        self.tabs.addTab(tab_pytorch, "🔥 Reranker")
 
         # --- Tab 5: Advanced Menu & CLI Functions Hub ---
         tab_adv = QWidget()
