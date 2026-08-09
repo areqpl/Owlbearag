@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "owlbearag"
+version = "2.0.0"
+description = "Enterprise Multi-Node Hybrid RAG, PyTorch Neural Vector Reranker & GPU Compute Console"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "owlyyy", email = "owlyyy@cachyos.local"}
+]
+dependencies = [
+    "PyQt6>=6.5.0",
+    "rich>=13.0.0",
+    "torch>=2.0.0",
+]
+
+[project.scripts]
+owlbearag = "owlbearag.gui:main"
+owlbearag-cli = "owlbearag.cli:main"
