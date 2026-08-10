@@ -12,7 +12,7 @@ export const LanguageSwitcher: FC<Props> = ({ currentLanguage, onLanguageChange 
       <select
         value={currentLanguage}
         onChange={(e) => onLanguageChange(e.target.value as Language)}
-        className="rounded-lg border border-gray-700 bg-gray-800 px-2.5 py-1.5 text-xs font-semibold text-gray-200 shadow-sm focus:border-indigo-500 focus:outline-none dark:border-gray-800 dark:bg-black dark:text-gray-100"
+        className="rounded-lg border border-slate-300 bg-slate-100 px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-200 dark:border-gray-800 dark:bg-black dark:text-gray-100 dark:hover:bg-gray-900 transition shadow-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
         aria-label="Select language"
       >
         {LANGUAGES.map((lang) => (

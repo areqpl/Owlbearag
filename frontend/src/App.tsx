@@ -23,6 +23,11 @@ export const App: FC = () => {
     return saved || 'en';
   });
 
+  const [apiBaseUrl, setApiBaseUrl] = useState<string>(() => {
+    return localStorage.getItem('owlbearag_api_base') || import.meta.env.VITE_API_BASE_URL || '';
+  });
+
+  const [showSettings, setShowSettings] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,7 +35,7 @@ export const App: FC = () => {
     try {
       localStorage.setItem('owlbearag_chat_messages', JSON.stringify(messages));
     } catch {
-      // Ignore quota error
+      // Ignore storage quota error
     }
   }, [messages]);
 
@@ -39,9 +44,18 @@ export const App: FC = () => {
     localStorage.setItem('owlbearag_lang', newLang);
   };
 
+  const handleSaveApiBase = (url: string) => {
+    setApiBaseUrl(url);
+    localStorage.setItem('owlbearag_api_base', url);
+  };
+
   const handleClearChat = () => {
     setMessages([]);
     localStorage.removeItem('owlbearag_chat_messages');
+  };
+
+  const handleSelectChip = (promptText: string) => {
+    setInput(promptText);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -66,8 +80,10 @@ export const App: FC = () => {
     setLoading(true);
     setError(null);
 
+    const targetUrl = apiBaseUrl ? `${apiBaseUrl.replace(/\/$/, '')}/query` : '/query';
+
     try {
-      const resp = await fetch('/query', {
+      const resp = await fetch(targetUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: trimmed, stream: true }),
@@ -112,7 +128,7 @@ export const App: FC = () => {
     } catch (err) {
       const msg = err instanceof Error ? err.message : getTranslation(lang, 'serverError');
       setError(msg);
-      // Remove empty assistant placeholder on error
+      // Remove empty placeholder on error
       setMessages((prev) => prev.filter((m) => m.content.length > 0));
     } finally {
       setLoading(false);
@@ -122,26 +138,45 @@ export const App: FC = () => {
   const t = (key: string) => getTranslation(lang, key);
 
   return (
-    <section className="flex h-screen flex-col bg-gray-900 text-gray-100 dark:bg-black transition-colors duration-200">
+    <section className="flex h-screen flex-col bg-slate-50 text-slate-900 dark:bg-black dark:text-gray-100 transition-colors duration-200">
       {/* Header Bar */}
-      <header className="flex flex-wrap items-center justify-between border-b border-gray-800 bg-gray-900/90 px-4 py-3 backdrop-blur dark:bg-black/90 dark:border-gray-800">
+      <header className="flex flex-wrap items-center justify-between border-b border-slate-200 bg-white/90 px-4 py-3 backdrop-blur dark:bg-black/90 dark:border-gray-800 shadow-sm">
         <div className="flex items-center gap-2.5">
-          <img src="/owl_icon.png" alt="Owlbearag Logo" className="h-7 w-7 object-contain" />
+          <img src="/owl_icon.png" alt="Owlbearag Logo" className="h-8 w-8 object-contain" />
           <div>
-            <h1 className="text-lg font-bold tracking-tight text-indigo-400 dark:text-indigo-300">
+            <h1 className="text-lg font-bold tracking-tight text-indigo-600 dark:text-indigo-400">
               {t('title')}
             </h1>
-            <p className="text-[10px] text-gray-400 font-mono">{t('subtitle')}</p>
+            <p className="text-[10px] text-slate-500 dark:text-gray-400 font-mono">{t('subtitle')}</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 mt-2 sm:mt-0">
+        <div className="flex items-center gap-2 mt-2 sm:mt-0 flex-wrap">
+          <a
+            href="https://github.com/areqpl/Owlbearag"
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-lg border border-slate-300 bg-slate-100 px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-200 dark:border-gray-800 dark:bg-black dark:text-gray-200 dark:hover:bg-gray-900 transition flex items-center gap-1 shadow-sm"
+            title="GitHub Repository"
+          >
+            ⭐ {t('github')}
+          </a>
+
+          <button
+            onClick={() => setShowSettings(!showSettings)}
+            className="rounded-lg border border-slate-300 bg-slate-100 px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-200 dark:border-gray-800 dark:bg-black dark:text-gray-200 dark:hover:bg-gray-900 transition shadow-sm"
+            title="Configure API Endpoint"
+          >
+            ⚙️ API
+          </button>
+
           <LanguageSwitcher currentLanguage={lang} onLanguageChange={handleLanguageChange} />
           <DarkModeToggle />
+
           {messages.length > 0 && (
             <button
               onClick={handleClearChat}
-              className="rounded-lg border border-red-900/50 bg-red-950/30 px-2.5 py-1.5 text-xs font-semibold text-red-300 hover:bg-red-900/60 hover:text-white transition"
+              className="rounded-lg border border-red-200 bg-red-50 px-2.5 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300 dark:hover:bg-red-900/60 transition shadow-sm"
               title={t('clear')}
             >
               🗑️ {t('clear')}
@@ -150,26 +185,85 @@ export const App: FC = () => {
         </div>
       </header>
 
-      {/* Main Chat Display */}
-      <ChatWindow messages={messages} />
+      {/* Settings Modal Bar (if toggled) */}
+      {showSettings && (
+        <div className="border-b border-indigo-200 bg-indigo-50/80 px-4 py-2.5 text-xs dark:border-indigo-900/40 dark:bg-indigo-950/20 transition-all flex items-center gap-2">
+          <label htmlFor="apiBaseInput" className="font-medium text-slate-700 dark:text-gray-300">
+            {t('apiUrlLabel')}
+          </label>
+          <input
+            id="apiBaseInput"
+            type="text"
+            value={apiBaseUrl}
+            onChange={(e) => handleSaveApiBase(e.target.value)}
+            placeholder="http://127.0.0.1:8000"
+            className="flex-1 rounded border border-slate-300 bg-white px-2.5 py-1 text-slate-800 placeholder-gray-400 focus:border-indigo-500 focus:outline-none dark:border-gray-800 dark:bg-black dark:text-gray-100"
+          />
+        </div>
+      )}
+
+      {/* Empty State / Welcome Container */}
+      {messages.length === 0 ? (
+        <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
+          <div className="max-w-md space-y-4">
+            <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-indigo-100 p-2.5 dark:bg-indigo-950/80 border border-indigo-200 dark:border-indigo-800 shadow-md">
+              <img src="/owl_icon.png" alt="Owlbearag Icon" className="h-full w-full object-contain" />
+            </div>
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+              {t('welcomeTitle')}
+            </h2>
+            <p className="text-xs text-slate-600 dark:text-gray-400 leading-relaxed">
+              {t('welcomeSub')}
+            </p>
+
+            {/* Starter Prompt Chips */}
+            <div className="pt-2 flex flex-col gap-2">
+              <button
+                onClick={() => handleSelectChip(t('chip1'))}
+                className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-medium text-slate-700 hover:border-indigo-400 hover:bg-indigo-50/50 dark:border-gray-800 dark:bg-[#111111] dark:text-gray-200 dark:hover:border-indigo-600 dark:hover:bg-indigo-950/30 transition text-left shadow-sm flex items-center justify-between"
+              >
+                <span>💡 {t('chip1')}</span>
+                <span className="text-indigo-500 font-bold">→</span>
+              </button>
+              <button
+                onClick={() => handleSelectChip(t('chip2'))}
+                className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-medium text-slate-700 hover:border-indigo-400 hover:bg-indigo-50/50 dark:border-gray-800 dark:bg-[#111111] dark:text-gray-200 dark:hover:border-indigo-600 dark:hover:bg-indigo-950/30 transition text-left shadow-sm flex items-center justify-between"
+              >
+                <span>⚡ {t('chip2')}</span>
+                <span className="text-indigo-500 font-bold">→</span>
+              </button>
+              <button
+                onClick={() => handleSelectChip(t('chip3'))}
+                className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-medium text-slate-700 hover:border-indigo-400 hover:bg-indigo-50/50 dark:border-gray-800 dark:bg-[#111111] dark:text-gray-200 dark:hover:border-indigo-600 dark:hover:bg-indigo-950/30 transition text-left shadow-sm flex items-center justify-between"
+              >
+                <span>🧠 {t('chip3')}</span>
+                <span className="text-indigo-500 font-bold">→</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : (
+        /* Main Chat Window */
+        <ChatWindow messages={messages} />
+      )}
 
       {/* Input Form */}
       <form
         onSubmit={handleSubmit}
-        className="flex items-center gap-2 border-t border-gray-800 bg-gray-900 px-4 py-3 dark:bg-black dark:border-gray-800"
+        className="flex items-center gap-2 border-t border-slate-200 bg-white px-4 py-3 dark:bg-black dark:border-gray-800 shadow-lg"
       >
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder={t('placeholder')}
-          className="flex-1 rounded-xl border border-gray-700 bg-gray-800 px-4 py-2.5 text-sm text-white placeholder-gray-400 focus:border-indigo-500 focus:outline-none dark:border-gray-800 dark:bg-[#111111]"
+          className="flex-1 rounded-xl border border-slate-300 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:bg-white focus:outline-none dark:border-gray-800 dark:bg-[#111111] dark:text-white dark:placeholder-gray-500 shadow-inner"
           aria-label={t('placeholder')}
           disabled={loading}
         />
         <button
           type="submit"
-          className="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500 disabled:opacity-50 shadow-md"
+          className="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500 disabled:opacity-50 shadow-md focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
           disabled={loading || !input.trim()}
         >
           {t('send')}
