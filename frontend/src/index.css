@@ -2,20 +2,107 @@
 @tailwind components;
 @tailwind utilities;
 
-/* AMOLED Dark Mode overrides */
-html.dark, html.dark body {
-  background-color: #000000 !important;
-  color: #f3f4f6;
+@layer base {
+  :root {
+    --bg-primary: #f8fafc;
+    --bg-surface: #ffffff;
+    --border-subtle: #e2e8f0;
+    --text-primary: #0f172a;
+    --text-muted: #64748b;
+    --accent-indigo: #4f46e5;
+  }
+
+  html.dark {
+    --bg-primary: #000000;
+    --bg-surface: #0a0a0a;
+    --border-subtle: #1e293b;
+    --text-primary: #f8fafc;
+    --text-muted: #94a3b8;
+    --accent-indigo: #6366f1;
+  }
+
+  html, body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
 }
 
-html.dark .bg-gray-900 {
-  background-color: #000000 !important;
+/* Animations */
+@keyframes animate-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-html.dark .bg-gray-800 {
-  background-color: #0a0a0a !important;
+@keyframes animate-slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-html.dark .border-gray-700, html.dark .border-gray-600 {
-  border-color: #1f2937 !important;
+@keyframes animate-scale-up {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in {
+  animation: animate-fade-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slide-down {
+  animation: animate-slide-down 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-scale-up {
+  animation: animate-scale-up 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Touch Target Minimum Sizing */
+button, select, input[type="text"] {
+  min-height: 40px;
+}
+
+/* Focus outline for keyboard navigation */
+:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.3);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.5);
 }

@@ -5,6 +5,15 @@ import { ChatWindow } from './components/ChatWindow';
 import { Message } from './components/ChatMessage';
 import { DarkModeToggle } from './components/DarkModeToggle';
 import { LanguageSwitcher } from './components/LanguageSwitcher';
+import {
+  GithubIcon,
+  SettingsIcon,
+  TrashIcon,
+  SendIcon,
+  LightbulbIcon,
+  BoltIcon,
+  BrainIcon,
+} from './components/Icons';
 import { Language, getTranslation } from './i18n';
 
 export const App: FC = () => {
@@ -35,7 +44,7 @@ export const App: FC = () => {
     try {
       localStorage.setItem('owlbearag_chat_messages', JSON.stringify(messages));
     } catch {
-      // Ignore storage quota error
+      // Ignore quota error
     }
   }, [messages]);
 
@@ -90,7 +99,16 @@ export const App: FC = () => {
       });
 
       if (!resp.ok) {
-        throw new Error(`${getTranslation(lang, 'serverError')} ${resp.status}`);
+        if (resp.status === 405) {
+          setShowSettings(true); // Open settings bar automatically on 405
+          throw new Error(getTranslation(lang, 'error405'));
+        } else if (resp.status === 404) {
+          throw new Error(getTranslation(lang, 'error404'));
+        } else if (resp.status === 500) {
+          throw new Error(getTranslation(lang, 'error500'));
+        } else {
+          throw new Error(`${getTranslation(lang, 'serverError')} (${resp.status})`);
+        }
       }
 
       if (resp.body && resp.headers.get('content-type')?.includes('text/plain')) {
@@ -126,9 +144,12 @@ export const App: FC = () => {
         });
       }
     } catch (err) {
-      const msg = err instanceof Error ? err.message : getTranslation(lang, 'serverError');
+      let msg = getTranslation(lang, 'errorNetwork');
+      if (err instanceof Error && err.message) {
+        msg = err.message;
+      }
       setError(msg);
-      // Remove empty placeholder on error
+      // Clean up empty assistant placeholder on failure
       setMessages((prev) => prev.filter((m) => m.content.length > 0));
     } finally {
       setLoading(false);
@@ -140,34 +161,40 @@ export const App: FC = () => {
   return (
     <section className="flex h-screen flex-col bg-slate-50 text-slate-900 dark:bg-black dark:text-gray-100 transition-colors duration-200">
       {/* Header Bar */}
-      <header className="flex flex-wrap items-center justify-between border-b border-slate-200 bg-white/90 px-4 py-3 backdrop-blur dark:bg-black/90 dark:border-gray-800 shadow-sm">
-        <div className="flex items-center gap-2.5">
-          <img src="/owl_icon.png" alt="Owlbearag Logo" className="h-8 w-8 object-contain" />
+      <header className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 bg-white/90 px-4 py-3 backdrop-blur dark:bg-black/90 dark:border-gray-800 shadow-sm gap-2.5">
+        <div className="flex items-center gap-3">
+          <img src="/owl_icon.png" alt="Owlbearag Logo" className="h-8 w-8 object-contain flex-shrink-0" />
           <div>
-            <h1 className="text-lg font-bold tracking-tight text-indigo-600 dark:text-indigo-400">
+            <h1 className="text-lg font-bold tracking-tight text-indigo-600 dark:text-indigo-400 leading-tight">
               {t('title')}
             </h1>
             <p className="text-[10px] text-slate-500 dark:text-gray-400 font-mono">{t('subtitle')}</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 mt-2 sm:mt-0 flex-wrap">
+        <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
           <a
             href="https://github.com/areqpl/Owlbearag"
             target="_blank"
             rel="noreferrer"
-            className="rounded-lg border border-slate-300 bg-slate-100 px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-200 dark:border-gray-800 dark:bg-black dark:text-gray-200 dark:hover:bg-gray-900 transition flex items-center gap-1 shadow-sm"
+            className="rounded-xl border border-slate-300 bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-200 dark:border-gray-800 dark:bg-black dark:text-gray-200 dark:hover:bg-gray-900 transition flex items-center gap-1.5 shadow-sm focus-visible:ring-2 focus-visible:ring-indigo-500"
             title="GitHub Repository"
           >
-            ⭐ {t('github')}
+            <GithubIcon />
+            <span className="hidden xs:inline">{t('github')}</span>
           </a>
 
           <button
             onClick={() => setShowSettings(!showSettings)}
-            className="rounded-lg border border-slate-300 bg-slate-100 px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-200 dark:border-gray-800 dark:bg-black dark:text-gray-200 dark:hover:bg-gray-900 transition shadow-sm"
+            className={`rounded-xl border px-3 py-2 text-xs font-semibold transition flex items-center gap-1.5 shadow-sm focus-visible:ring-2 focus-visible:ring-indigo-500 ${
+              showSettings
+                ? 'border-indigo-500 bg-indigo-50 text-indigo-600 dark:border-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-300'
+                : 'border-slate-300 bg-slate-100 text-slate-700 hover:bg-slate-200 dark:border-gray-800 dark:bg-black dark:text-gray-200 dark:hover:bg-gray-900'
+            }`}
             title="Configure API Endpoint"
           >
-            ⚙️ API
+            <SettingsIcon />
+            <span>API</span>
           </button>
 
           <LanguageSwitcher currentLanguage={lang} onLanguageChange={handleLanguageChange} />
@@ -176,20 +203,21 @@ export const App: FC = () => {
           {messages.length > 0 && (
             <button
               onClick={handleClearChat}
-              className="rounded-lg border border-red-200 bg-red-50 px-2.5 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300 dark:hover:bg-red-900/60 transition shadow-sm"
+              className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-semibold text-red-600 hover:bg-red-100 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300 dark:hover:bg-red-900/60 transition flex items-center gap-1.5 shadow-sm focus-visible:ring-2 focus-visible:ring-red-500"
               title={t('clear')}
             >
-              🗑️ {t('clear')}
+              <TrashIcon />
+              <span className="hidden sm:inline">{t('clear')}</span>
             </button>
           )}
         </div>
       </header>
 
-      {/* Settings Modal Bar (if toggled) */}
+      {/* Settings Panel Bar */}
       {showSettings && (
-        <div className="border-b border-indigo-200 bg-indigo-50/80 px-4 py-2.5 text-xs dark:border-indigo-900/40 dark:bg-indigo-950/20 transition-all flex items-center gap-2">
-          <label htmlFor="apiBaseInput" className="font-medium text-slate-700 dark:text-gray-300">
-            {t('apiUrlLabel')}
+        <div className="border-b border-indigo-200 bg-indigo-50/90 px-4 py-3 text-xs dark:border-indigo-900/40 dark:bg-indigo-950/30 transition-all flex flex-col sm:flex-row items-start sm:items-center gap-2 animate-slide-down shadow-inner">
+          <label htmlFor="apiBaseInput" className="font-semibold text-slate-700 dark:text-indigo-200 flex-shrink-0">
+            ⚙️ {t('apiUrlLabel')}
           </label>
           <input
             id="apiBaseInput"
@@ -197,47 +225,60 @@ export const App: FC = () => {
             value={apiBaseUrl}
             onChange={(e) => handleSaveApiBase(e.target.value)}
             placeholder="http://127.0.0.1:8000"
-            className="flex-1 rounded border border-slate-300 bg-white px-2.5 py-1 text-slate-800 placeholder-gray-400 focus:border-indigo-500 focus:outline-none dark:border-gray-800 dark:bg-black dark:text-gray-100"
+            className="w-full sm:flex-1 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-slate-800 placeholder-gray-400 focus:border-indigo-500 focus:outline-none dark:border-gray-800 dark:bg-black dark:text-gray-100 font-mono shadow-sm"
           />
         </div>
       )}
 
       {/* Empty State / Welcome Container */}
       {messages.length === 0 ? (
-        <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
-          <div className="max-w-md space-y-4">
-            <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-indigo-100 p-2.5 dark:bg-indigo-950/80 border border-indigo-200 dark:border-indigo-800 shadow-md">
+        <div className="flex-1 flex flex-col items-center justify-center p-6 text-center animate-fade-in">
+          <div className="max-w-md w-full space-y-5">
+            <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-100 p-3 dark:bg-indigo-950/80 border border-indigo-200 dark:border-indigo-800 shadow-md">
               <img src="/owl_icon.png" alt="Owlbearag Icon" className="h-full w-full object-contain" />
             </div>
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-              {t('welcomeTitle')}
-            </h2>
-            <p className="text-xs text-slate-600 dark:text-gray-400 leading-relaxed">
-              {t('welcomeSub')}
-            </p>
+            <div>
+              <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
+                {t('welcomeTitle')}
+              </h2>
+              <p className="mt-1.5 text-xs sm:text-sm text-slate-600 dark:text-gray-400 leading-relaxed">
+                {t('welcomeSub')}
+              </p>
+            </div>
 
             {/* Starter Prompt Chips */}
-            <div className="pt-2 flex flex-col gap-2">
+            <div className="pt-2 space-y-2.5 text-left">
               <button
                 onClick={() => handleSelectChip(t('chip1'))}
-                className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-medium text-slate-700 hover:border-indigo-400 hover:bg-indigo-50/50 dark:border-gray-800 dark:bg-[#111111] dark:text-gray-200 dark:hover:border-indigo-600 dark:hover:bg-indigo-950/30 transition text-left shadow-sm flex items-center justify-between"
+                className="w-full rounded-2xl border border-slate-200 bg-white p-3.5 text-xs font-medium text-slate-700 hover:border-indigo-500 hover:bg-indigo-50/50 dark:border-gray-800 dark:bg-[#0a0a0a] dark:text-gray-200 dark:hover:border-indigo-600 dark:hover:bg-indigo-950/40 transition-all shadow-sm flex items-center justify-between group"
               >
-                <span>💡 {t('chip1')}</span>
-                <span className="text-indigo-500 font-bold">→</span>
+                <div className="flex items-center gap-2.5">
+                  <LightbulbIcon className="text-amber-500 flex-shrink-0" />
+                  <span>{t('chip1')}</span>
+                </div>
+                <span className="text-indigo-500 font-bold group-hover:translate-x-1 transition-transform">→</span>
               </button>
+
               <button
                 onClick={() => handleSelectChip(t('chip2'))}
-                className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-medium text-slate-700 hover:border-indigo-400 hover:bg-indigo-50/50 dark:border-gray-800 dark:bg-[#111111] dark:text-gray-200 dark:hover:border-indigo-600 dark:hover:bg-indigo-950/30 transition text-left shadow-sm flex items-center justify-between"
+                className="w-full rounded-2xl border border-slate-200 bg-white p-3.5 text-xs font-medium text-slate-700 hover:border-indigo-500 hover:bg-indigo-50/50 dark:border-gray-800 dark:bg-[#0a0a0a] dark:text-gray-200 dark:hover:border-indigo-600 dark:hover:bg-indigo-950/40 transition-all shadow-sm flex items-center justify-between group"
               >
-                <span>⚡ {t('chip2')}</span>
-                <span className="text-indigo-500 font-bold">→</span>
+                <div className="flex items-center gap-2.5">
+                  <BoltIcon className="text-indigo-500 flex-shrink-0" />
+                  <span>{t('chip2')}</span>
+                </div>
+                <span className="text-indigo-500 font-bold group-hover:translate-x-1 transition-transform">→</span>
               </button>
+
               <button
                 onClick={() => handleSelectChip(t('chip3'))}
-                className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-medium text-slate-700 hover:border-indigo-400 hover:bg-indigo-50/50 dark:border-gray-800 dark:bg-[#111111] dark:text-gray-200 dark:hover:border-indigo-600 dark:hover:bg-indigo-950/30 transition text-left shadow-sm flex items-center justify-between"
+                className="w-full rounded-2xl border border-slate-200 bg-white p-3.5 text-xs font-medium text-slate-700 hover:border-indigo-500 hover:bg-indigo-50/50 dark:border-gray-800 dark:bg-[#0a0a0a] dark:text-gray-200 dark:hover:border-indigo-600 dark:hover:bg-indigo-950/40 transition-all shadow-sm flex items-center justify-between group"
               >
-                <span>🧠 {t('chip3')}</span>
-                <span className="text-indigo-500 font-bold">→</span>
+                <div className="flex items-center gap-2.5">
+                  <BrainIcon className="text-purple-500 flex-shrink-0" />
+                  <span>{t('chip3')}</span>
+                </div>
+                <span className="text-indigo-500 font-bold group-hover:translate-x-1 transition-transform">→</span>
               </button>
             </div>
           </div>
@@ -250,35 +291,36 @@ export const App: FC = () => {
       {/* Input Form */}
       <form
         onSubmit={handleSubmit}
-        className="flex items-center gap-2 border-t border-slate-200 bg-white px-4 py-3 dark:bg-black dark:border-gray-800 shadow-lg"
+        className="flex items-center gap-2.5 border-t border-slate-200 bg-white px-4 py-3 dark:bg-black dark:border-gray-800 shadow-lg"
       >
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder={t('placeholder')}
-          className="flex-1 rounded-xl border border-slate-300 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:bg-white focus:outline-none dark:border-gray-800 dark:bg-[#111111] dark:text-white dark:placeholder-gray-500 shadow-inner"
+          className="flex-1 rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:bg-white focus:outline-none dark:border-gray-800 dark:bg-[#0a0a0a] dark:text-white dark:placeholder-gray-500 shadow-inner transition-all"
           aria-label={t('placeholder')}
           disabled={loading}
         />
         <button
           type="submit"
-          className="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500 disabled:opacity-50 shadow-md focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+          className="rounded-2xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white transition-all hover:bg-indigo-500 disabled:opacity-50 shadow-md flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-indigo-500"
           disabled={loading || !input.trim()}
         >
-          {t('send')}
+          <SendIcon />
+          <span className="hidden sm:inline">{t('send')}</span>
         </button>
       </form>
 
       {/* Loading Overlay */}
       {loading && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 backdrop-blur-[2px]">
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 backdrop-blur-[2px] z-40 animate-fade-in">
           <Spinner />
-          <span className="mt-2 text-xs font-medium text-indigo-300">{t('thinking')}</span>
+          <span className="mt-3 text-xs font-semibold text-indigo-300 tracking-wide">{t('thinking')}</span>
         </div>
       )}
 
-      {/* Toast Error Alert */}
+      {/* Toast Exception Alert */}
       {error && <Toast message={error} onClose={() => setError(null)} />}
     </section>
   );
