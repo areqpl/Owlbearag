@@ -47,7 +47,7 @@ jobs:
           body: |
             Continuous automated release built from the latest codebase commits on `main`.
 
-            ### Installation
+            ### Quick Installation
             ```bash
             pip install git+https://github.com/areqpl/Owlbearag.git
             ```

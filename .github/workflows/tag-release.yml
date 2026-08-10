@@ -1,13 +1,16 @@
-# .github/workflows/tag-release.yml
 name: Tag Release Build
 
 on:
   push:
     tags:
-      - 'v*'   # tags like v1.0.0
+      - 'v*'
+
+permissions:
+  contents: write
 
 jobs:
   build:
+    name: Build Multi-Platform Artifacts (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -22,45 +25,29 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.13"
+          python-version: "3.11"
 
       - name: Install build dependencies
         run: |
-          python -m pip install --upgrade pip setuptools wheel build
-          pip install pyinstaller
-          # Install GUI-specific dependencies
-          pip install pyqt6 httpx
+          python -m pip install --upgrade pip setuptools wheel build pyinstaller
 
-      - name: Build wheel (Linux) or exe (Windows)
+      - name: Build Python Package (Wheel & sdist)
         if: matrix.os == 'ubuntu-latest'
         run: |
           python -m build
 
-      - name: Build Windows executable
+      - name: Build Windows Executables
         if: matrix.os == 'windows-latest'
         run: |
           pyinstaller --onefile owlbearag/cli.py --name owlbearag.exe
+          pyinstaller --onefile llama_node/gui_client.py --name owlbearag_gui.exe
 
-      - name: Build Linux GUI executable
-  if: matrix.os == 'ubuntu-latest'
-  run: |
-    pyinstaller --onefile llama_node/gui_client.py --name owlbearag_gui
+      - name: Build Linux Executable
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          pyinstaller --onefile llama_node/gui_client.py --name owlbearag_gui
 
-- name: Build Windows GUI executable
-  if: matrix.os == 'windows-latest'
-  run: |
-    pyinstaller --onefile llama_node/gui_client.py --name owlbearag_gui.exe
-
-- name: Upload artifacts for release
-  uses: actions/upload-artifact@v4
-  with:
-    name: ${{ matrix.os }}-artifacts
-    path: |
-      dist/*.whl
-      dist/*.tar.gz
-      dist/owlbearag.exe
-      dist/owlbearag_gui
-      dist/owlbearag_gui.exe
+      - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.os }}-artifacts
@@ -68,13 +55,16 @@ jobs:
             dist/*.whl
             dist/*.tar.gz
             dist/owlbearag.exe
+            dist/owlbearag_gui
+            dist/owlbearag_gui.exe
 
   publish-release:
+    name: Publish GitHub Release
     needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Download all artifacts
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v4
         with:
           path: ./artifacts
 
@@ -86,5 +76,6 @@ jobs:
           draft: false
           prerelease: false
           files: ./artifacts/**
+          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
