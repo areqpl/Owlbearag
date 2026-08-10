@@ -54,6 +54,7 @@ owlbearag-cli gpu status
 - **⚡ Dual-GPU Live Telemetry**: Stream `nvidia-smi` memory allocations, core temperatures, and model states over SSH (`GTX 1080` + `RTX 3060`).
 - **🧠 PyTorch Neural Vector Reranker**: Custom CUDA float16 AMP similarity matrix calculations for chunk reranking.
 - **🌐 Cloudflare VPS Synchronization**: Automated background `rsync` workers pulling staging configurations from remote production nodes.
+- **💬 Web Application & GitHub Pages**: Lightweight React + Vite chat UI with true AMOLED dark mode, token streaming, and native multilingual support (English, Polish, Ukrainian, Chinese, Dutch, German).
 - **🔍 389+ Dynamic Command Auto-Discovery**: Auto-scans local agent skills, CLI functions, and remote SSH tools in real time.
 - **🔧 Self-Healing Connection Resolver**: Probes Ollama HTTP endpoints, tests fallbacks, and executes systemd service restarts automatically.
 
@@ -72,3 +73,5 @@ owlbearag-cli gpu status
 ## 📜 License
 
 Released under the **[MIT License](LICENSE)**.
+
+> **⚠️ Windows users:** The generated `owlbearag.exe` may trigger Windows Defender SmartScreen false‑positive warnings. This is harmless; you can allow the app to run.

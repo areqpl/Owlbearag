@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* AMOLED Dark Mode overrides */
+html.dark, html.dark body {
+  background-color: #000000 !important;
+  color: #f3f4f6;
+}
+
+html.dark .bg-gray-900 {
+  background-color: #000000 !important;
+}
+
+html.dark .bg-gray-800 {
+  background-color: #0a0a0a !important;
+}
+
+html.dark .border-gray-700, html.dark .border-gray-600 {
+  border-color: #1f2937 !important;
+}
