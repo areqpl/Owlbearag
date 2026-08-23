@@ -1,7 +1,7 @@
 fastapi==0.141.1
 uvicorn[standard]==0.52.3
 httpx==0.28.1
-llama-index==0.14.23
+llama-index==0.14.24
 llama-index-embeddings-openai==0.6.0
 llama-index-llms-openai==0.7.10
 llama-index-vector-stores-chroma==0.5.5
